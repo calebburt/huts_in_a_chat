@@ -1,0 +1,19 @@
+<div class="section">
+  <p style="color: green"><%= notice %></p>
+
+  <% content_for :title, "Chats" %>
+
+  <h1 style="display: inline;">Chats</h1> <%= link_to "New chat", new_chat_path, class: "btn btn-primary", style: "float: right; display: inline-block;" %> <p></p>
+
+  <div id="chats">
+    <br>
+    <% @chats.each do |chat| %>
+        <div style="width: 50%" class="btn">
+          <%= link_to chat, style: "text-decoration: none; color: black;" do %>
+            <h3><%= chat.name %></h3>
+            <p><%= chat.users.count %> members</p>
+          <% end %>
+        </div>
+    <% end %>
+  </div>
+</div>

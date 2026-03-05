@@ -1,0 +1,18 @@
+<div class="section">
+  <% if notice %>
+    <p style="color: green"><%= notice %></p>
+  <%end%>
+
+  <h2><%= @chat.name %></h2>
+
+  <%@chat.messages.each do |message|%>
+    <p><small><%= message.user.name %></small> <%= message.content %></p>
+  <% end %>
+
+  <%= form_with(model: [@chat, @chat.messages.build], local: true) do |form| %>
+    <div class="field">
+      <%= form.text_field :content, placeholder: "Type your message...", class: "btn" %>
+      <%= form.submit "Send", class: "btn" %>
+    </div>
+  <% end %>
+</div>

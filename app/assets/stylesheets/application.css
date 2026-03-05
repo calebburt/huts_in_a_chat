@@ -1,0 +1,93 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  background-image: url('https://imgs.search.brave.com/gNL6KTh38EZs00d_-GBc_PtOZKtIxkIRxJPk6qYPt10/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvd2lu/ZG93cy0xMS00ay1u/ZW9uLXdhdmVzLXhk/bWhhaGFybjBvMzQ1/N3UuanBn');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+main {
+  margin: 50px;
+}
+
+.section {
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section-light {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border-bottom: #111 1px solid;
+}
+
+header ul, header h1 {
+  display: inline;
+}
+
+header ul {
+  position: relative;
+  transform: translate(0, -50%);
+}
+
+header ul li {
+  list-style-type: none;
+  display: inline;
+  padding: 0;
+  margin: 0;
+}
+
+header ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+header ul li a:hover {
+  text-decoration: underline;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: white;
+  color: black;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  margin: 5px;
+}
+
+.btn:hover {
+  background-color: gainsboro;
+}
+
+.btn-primary {
+  background-color: #45AC70;
+  color: white;
+}
