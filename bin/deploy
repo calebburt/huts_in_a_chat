@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+
+APP_NAME="huts_chat_new"
+IMAGE_NAME="$APP_NAME:latest"
+CONTAINER_NAME="$APP_NAME"
+RAILS_MASTER_KEY=$(cat config/master.key)
+STORAGE_VOLUME="${APP_NAME}_storage"
+
+echo "==> Building Docker image..."
+docker build -t "$IMAGE_NAME" .
+
+echo "==> Stopping existing container (if any)..."
+docker stop "$CONTAINER_NAME" 2>/dev/null || true
+docker rm "$CONTAINER_NAME" 2>/dev/null || true
+
+echo "==> Starting container..."
+docker run -d \
+  --name "$CONTAINER_NAME" \
+  --restart unless-stopped \
+  -p 4080:80 \
+  -e RAILS_MASTER_KEY="$RAILS_MASTER_KEY" \
+  -e SOLID_QUEUE_IN_PUMA=true \
+  -v "${STORAGE_VOLUME}:/rails/storage" \
+  "$IMAGE_NAME"
+
+echo "==> Waiting for container to start..."
+sleep 2
+docker logs "$CONTAINER_NAME" --tail 20
+
+echo ""
+echo "==> Deployed! Serving via nginx at https://chat.caleb.burt.id.au"
