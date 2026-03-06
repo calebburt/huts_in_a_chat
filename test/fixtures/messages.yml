@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  content: MyString
+  content: Hello
   has_blob: false
+  chat: one
+  user: one
 
 two:
-  content: MyString
+  content: Hi there
   has_blob: false
+  chat: one
+  user: two

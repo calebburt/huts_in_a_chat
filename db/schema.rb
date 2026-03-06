@@ -10,44 +10,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_06_030606) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_06_030606) do
   create_table "chats", force: :cascade do |t|
-    t.string "name", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "chats_users", id: false, force: :cascade do |t|
-    t.integer "user_id", null: false
     t.integer "chat_id", null: false
+    t.integer "user_id", null: false
   end
 
   create_table "invitation_tokens", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
     t.datetime "expires"
     t.string "token"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["user_id"], name: "index_invitation_tokens_on_user_id"
   end
 
   create_table "messages", force: :cascade do |t|
-    t.string "content"
-    t.boolean "has_blob"
     t.integer "chat_id", null: false
-    t.integer "user_id", null: false
+    t.string "content"
     t.datetime "created_at", null: false
+    t.boolean "has_blob"
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
     t.index ["chat_id"], name: "index_messages_on_chat_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "password_digest"
     t.boolean "confirmed"
     t.datetime "created_at", null: false
+    t.string "email"
+    t.string "name"
+    t.string "password_digest"
     t.datetime "updated_at", null: false
   end
 

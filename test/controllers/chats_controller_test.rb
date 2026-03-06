@@ -2,7 +2,10 @@ require "test_helper"
 
 class ChatsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:one)
+    sign_in_as @user
     @chat = chats(:one)
+    @chat.users << @user unless @chat.users.include?(@user)
   end
 
   test "should get index" do
@@ -17,7 +20,7 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create chat" do
     assert_difference("Chat.count") do
-      post chats_url, params: { chat: { name: @chat.name } }
+      post chats_url, params: { chat: { name: "New Chat", user_ids: [ @user.id ] } }
     end
 
     assert_redirected_to chat_url(Chat.last)
