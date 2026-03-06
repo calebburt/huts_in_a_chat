@@ -11,9 +11,9 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  color: white;
   margin: 0;
-  background-image: url('https://imgs.search.brave.com/gNL6KTh38EZs00d_-GBc_PtOZKtIxkIRxJPk6qYPt10/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJzLmNvbS9p/bWFnZXMvaGQvd2lu/ZG93cy0xMS00ay1u/ZW9uLXdhdmVzLXhk/bWhhaGFybjBvMzQ1/N3UuanBn');
+  background-image: url('https://imgs.search.brave.com/Qa3zlxF7UqWmzC0OPzBuYzWmW4Cz-NBvsvTpRhl1g0I/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDk0ODAz/NjguanBn');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -23,25 +23,34 @@ main {
   margin: 50px;
 }
 
+hr {
+    height: 1px;
+    color: rgba(200, 200, 200, 0.3);
+    background: rgba(200, 200, 200, 0.3);
+    font-size: 0;
+    border: 0;
+}
+
 .section {
   padding: 20px;
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(50, 50, 50, 0.5);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  border: 0.5px solid rgba(50, 50, 50, 0.3);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .section-light {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(50, 50, 50, 0.1);
 }
 
 header {
-  background-color: #333;
-  color: white;
+  background-color: rgba(50, 50, 50, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   padding: 10px 20px;
-  border-bottom: #111 1px solid;
+  border-bottom: rgba(25, 25, 25, 0.3) 1px solid;
 }
 
 header ul, header h1 {
@@ -56,7 +65,7 @@ header ul {
 header ul li {
   list-style-type: none;
   display: inline;
-  padding: 0;
+  padding: 10px;
   margin: 0;
 }
 
@@ -70,11 +79,11 @@ header ul li a:hover {
   text-decoration: underline;
 }
 
-.btn {
+.btn, input, button {
   display: inline-block;
   padding: 10px 20px;
-  background-color: white;
-  color: black;
+  background-color: #333;
+  color: white;
   text-decoration: none;
   border-radius: 5px;
   border: none;
@@ -83,11 +92,16 @@ header ul li a:hover {
   margin: 5px;
 }
 
-.btn:hover {
-  background-color: gainsboro;
+.btn:hover, input:hover, button:hover {
+  background-color: #555;
 }
 
 .btn-primary {
   background-color: #45AC70;
+  color: white;
+}
+
+.btn-danger {
+  background-color: #D9534F;
   color: white;
 }

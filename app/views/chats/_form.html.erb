@@ -19,6 +19,12 @@
   <br>
 
   <div>
+    <% users = User.all.collect {|user| [user.name, user.id] } %>
+    <%= form.label "Users", style: "display: block" %>
+    <%= form.select "user_ids", users, {}, { multiple: true, size: 10 } %>
+  </div>
+
+  <div>
     <%= form.submit %>
   </div>
 <% end %>

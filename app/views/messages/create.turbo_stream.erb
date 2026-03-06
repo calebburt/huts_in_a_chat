@@ -1,0 +1,8 @@
+<%= turbo_stream.replace "message_form" do %>
+  <%= form_with(model: [@chat, @chat.messages.build], id: "message_form") do |form| %>
+    <div class="field" style="grid-row: 3; grid-column: 1 / -1; display: flex; gap: 10px;">
+      <%= form.text_field :content, placeholder: "Type your message...", style: "flex: 1;" %>
+      <%= form.submit "Send", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% end %>

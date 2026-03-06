@@ -2,7 +2,11 @@ class MessagesController < ApplicationController
   def create
     @chat = Chat.find(params[:chat_id])
     @message = @chat.messages.create(message_params)
-    redirect_to chat_path(@chat)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to chat_path(@chat) }
+    end
   end
 
   private

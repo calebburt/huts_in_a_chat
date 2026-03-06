@@ -1,19 +1,16 @@
-<div class="section">
-  <p style="color: green"><%= notice %></p>
-
+<div class="section" style="display: grid; grid-template-columns: auto fit-content(100%); grid-template-rows: fit-content(100%) auto; gap: 10px;">
   <% content_for :title, "Chats" %>
 
-  <h1 style="display: inline;">Chats</h1> <%= link_to "New chat", new_chat_path, class: "btn btn-primary", style: "float: right; display: inline-block;" %> <p></p>
+  <h1>Chats</h1>
+  <%= button_to "New chat", new_chat_path, class: "btn btn-primary", method: :get %>
 
-  <div id="chats">
-    <br>
+  <div id="chats" style="grid-column: 1 / -1;">
+    <hr>
     <% @chats.each do |chat| %>
-        <div style="width: 50%" class="btn">
-          <%= link_to chat, style: "text-decoration: none; color: black;" do %>
-            <h3><%= chat.name %></h3>
-            <p><%= chat.users.count %> members</p>
-          <% end %>
-        </div>
+      <%= link_to chat, style: "text-decoration: none; color: white;" do %>
+        <h3><%= chat.name %></h3>
+      <% end %>
+      <hr>
     <% end %>
   </div>
 </div>

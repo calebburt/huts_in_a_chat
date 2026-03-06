@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Huts Chat New" %></title>
+    <title><%= (content_for(:title) || "Home") + " | Huts in a Chat" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -11,7 +11,7 @@
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -22,14 +22,23 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body style="display: flex; flex-direction: column; height: 100vh;">
     <header>
       <h1>Huts in a Chat</h1>
       <ul>
         <li><%= link_to "Chats", chats_path %></li>
+        <li><%= link_to "Login", auth_login_path %></li>
+        <li><%= link_to "Invite", auth_new_path %></li>
+        <li><%= link_to "Logout", auth_logout_path %></li>
       </ul>
     </header>
-    <main>
+    <main style="display: grid; gap: 10px; flex: 1;">
+      <% if notice %>
+        <p style="color: green"><%= notice %></p>
+      <% end %>
+      <% if alert %>
+        <p style="color: red"><%= alert %></p>
+      <% end %>
       <%= yield %>
     </main>
   </body>

@@ -3,12 +3,16 @@ class ChatsController < ApplicationController
 
   # GET /chats or /chats.json
   def index
-    @chats = Chat.all
+    @chats = Chat.joins(:users).where(users: { id: session[:user_id] }).distinct
   end
 
   # GET /chats/1 or /chats/1.json
   def show
-    @message = Message.new
+    if Chat.find(params[:id]).users.include? User.find(session[:user_id])
+      @message = Message.new
+    else
+      redirect_to root_path, status: :not_found
+    end
   end
 
   # GET /chats/new
@@ -18,11 +22,24 @@ class ChatsController < ApplicationController
 
   # GET /chats/1/edit
   def edit
+    if Chat.find(params[:id]).users.include? User.find(session[:user_id])
+      render
+    else
+      redirect_to root_path, status: :not_found
+    end
   end
 
   # POST /chats or /chats.json
   def create
     @chat = Chat.new(chat_params)
+    logger.error chat_params
+    for user_id in params[:chat][:user_ids]
+      begin
+        @chat.users.append User.find(user_id.to_i)
+      rescue => _
+        logger.warn "Invalid user id: #{user_id.to_i}"
+      end
+    end
 
     respond_to do |format|
       if @chat.save
@@ -66,6 +83,6 @@ class ChatsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def chat_params
-      params.expect(chat: [ :name ])
+      params.expect(chat: [ :name, :user_ids ])
     end
 end

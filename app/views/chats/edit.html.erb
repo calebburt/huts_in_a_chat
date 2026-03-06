@@ -1,13 +1,7 @@
 <div class="section">
-  <% content_for :title, "Editing chat" %>
+  <% content_for :title, "Editing #{@chat.name}" %>
 
-  <h1>Editing chat</h1>
+  <h1>Editing <%= @chat.name %></h1>
 
   <%= render "form", chat: @chat %>
-
-  <br>
-
-  <div>
-    <%= link_to "Show this chat", @chat %>
-  </div>
 </div>

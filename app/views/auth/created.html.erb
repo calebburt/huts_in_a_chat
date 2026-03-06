@@ -1,0 +1,6 @@
+<div class="section">
+  <% content_for :title, "Created Invitation Token" %>
+  <h1>Created Invitation Token</h1>
+  <p>URL: <%= auth_accept_url(token: @token.token) %></p>
+  <p>Expires at: <%= @token.expires %></p>
+</div>
