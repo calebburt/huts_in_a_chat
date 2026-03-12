@@ -12,6 +12,7 @@
 [] better mobile
 [] Fix word wrapping
 [] users list
+[] max chars
 
 ## Upto here
 

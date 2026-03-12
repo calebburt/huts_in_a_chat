@@ -1,24 +1,5 @@
-# README
+# Huts in a Chat
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Huts in a chat is a simple chat app build with ruby on rails. 
+It has amazing styling, and lots of custamizability.
+It has full markdown support.
