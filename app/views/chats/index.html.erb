@@ -1,10 +1,24 @@
-<div class="section" style="display: grid; grid-template-columns: auto fit-content(100%); grid-template-rows: fit-content(100%) auto; gap: 10px;">
+<div class="section"
+     style="
+       display: flex;
+       flex-direction: column;
+       gap: 10px;
+       height: 100%;
+       min-height: 0;
+     ">
   <% content_for :title, "Chats" %>
 
-  <h1>Chats</h1>
-  <%= button_to "New chat", new_chat_path, class: "btn btn-primary", method: :get %>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <h1 style="margin: 0;">Chats</h1>
+    <%= button_to "New chat", new_chat_path, class: "btn btn-primary", method: :get %>
+  </div>
 
-  <div id="chats" style="grid-column: 1 / -1;">
+  <div id="chats"
+       style="
+         flex: 1;
+         overflow-y: auto;
+         min-height: 0;
+       ">
     <hr>
     <% @chats.each do |chat| %>
       <%= link_to chat, style: "text-decoration: none; color: white;" do %>

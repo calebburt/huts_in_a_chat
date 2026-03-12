@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "users/show"
+  get "users/edit"
   get "auth/new"
   post "auth/create"
   get "auth/created"
@@ -7,12 +9,16 @@ Rails.application.routes.draw do
   get "auth/login"
   post "auth/login"
   get "auth/logout"
+  post "auth/push_subscriptions"
 
   root "chats#index"
 
   resources :chats do
     resources :messages, only: [ :create ]
   end
+
+  resources :users, only: [ :show, :update, :edit ]
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

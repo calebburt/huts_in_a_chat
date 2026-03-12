@@ -9,14 +9,28 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
+html, body {
+  height: 100%;
+}
+
+main {
+  flex: 1;
+  min-height: 0;   /* allow children to shrink */
+  overflow: hidden; /* prevent page overflow */
+}
+
 body {
+  word-break: break-all;
   font-family: Arial, sans-serif;
   color: white;
   margin: 0;
-  background-image: url('https://imgs.search.brave.com/Qa3zlxF7UqWmzC0OPzBuYzWmW4Cz-NBvsvTpRhl1g0I/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJjYXZlLmNv/bS93cC93cDk0ODAz/NjguanBn');
+  background: url('https://tse4.mm.bing.net/th/id/OIP.t_MKZo7TAAPISL1gwZGe4QHaE8?rs=1&pid=ImgDetMain&o=7&rm=3');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 main {
@@ -53,13 +67,78 @@ header {
   border-bottom: rgba(25, 25, 25, 0.3) 1px solid;
 }
 
+header.titlebar {
+  -webkit-app-region: drag;
+  app-region: drag;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+header.titlebar h1 {
+  margin: 0;
+  white-space: nowrap;
+}
+
+header.titlebar img {
+  height: 40px;
+  padding: 5px;
+}
+
+header.titlebar ul,
+header.titlebar ul li a,
+header.titlebar ul li {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+@media (display-mode: window-controls-overlay) {
+  body {
+    padding-top: env(titlebar-area-height, 0px);
+  }
+
+  header.titlebar {
+    position: fixed;
+    top: env(titlebar-area-y, 0);
+    left: env(titlebar-area-x, 0);
+    width: env(titlebar-area-width, 100%);
+    height: env(titlebar-area-height, auto);
+    z-index: 1000;
+    padding: 0 10px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  header.titlebar h1 {
+    font-size: 14px;
+  }
+
+  header.titlebar img {
+    height: 20px;
+    padding: 2px 4px;
+  }
+
+  header.titlebar ul {
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  header.titlebar ul li {
+    padding: 4px 6px;
+  }
+
+  header.titlebar ul li a {
+    font-size: 13px;
+  }
+}
+
 header ul, header h1 {
   display: inline;
 }
 
 header ul {
-  position: relative;
-  transform: translate(0, -50%);
+  vertical-align: middle;
 }
 
 header ul li {
@@ -79,7 +158,7 @@ header ul li a:hover {
   text-decoration: underline;
 }
 
-.btn, input, button {
+.btn, input, button, select {
   display: inline-block;
   padding: 10px 20px;
   background-color: #333;
@@ -90,6 +169,11 @@ header ul li a:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
   margin: 5px;
+}
+
+option {
+  padding: 5px;
+  border-radius: 5px;
 }
 
 .btn:hover, input:hover, button:hover {
@@ -104,4 +188,13 @@ header ul li a:hover {
 .btn-danger {
   background-color: #D9534F;
   color: white;
+}
+
+@media screen and (max-width: 700px) {
+  #members {
+    display: none;
+  }
+  #messages_section {
+    grid-column: span 2 !important; 
+  }
 }

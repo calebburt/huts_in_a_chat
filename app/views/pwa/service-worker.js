@@ -13,13 +13,13 @@ self.addEventListener("notificationclick", function(event) {
         let client = clientList[i]
         let clientPath = (new URL(client.url)).pathname
 
-        if (clientPath == event.notification.data.path && "focus" in client) {
+        if ("focus" in client) {
           return client.focus()
         }
       }
 
       if (clients.openWindow) {
-        return clients.openWindow(event.notification.data.path)
+        return clients.openWindow("/chats")
       }
     })
   )

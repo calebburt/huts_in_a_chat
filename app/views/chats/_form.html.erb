@@ -19,12 +19,13 @@
   <br>
 
   <div>
-    <% users = User.all.collect {|user| [user.name, user.id] } %>
+    <% users = User.all.collect {|user| [user.name, user.id] }.reject { |user| !User.find(user[1]).confirmed } %>
+    <% # users = User.all.collect {|user| [user.name, user.id] }.reject {|user| user[1] == session[:user_id] } %>
     <%= form.label "Users", style: "display: block" %>
-    <%= form.select "user_ids", users, {}, { multiple: true, size: 10 } %>
+    <%= form.select "user_ids", users, {}, { multiple: true, size: 10, class: "btn" } %>
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.submit class: "btn-primary" %>
   </div>
 <% end %>

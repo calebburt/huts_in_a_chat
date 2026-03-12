@@ -23,5 +23,9 @@ module HutsChatNew
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Not in config because of assets precompilation
+    # config.x.vapid_private = Rails.application.credentials.vapid.private
+    # config.x.vapid_public = Rails.application.credentials.vapid.public
   end
 end

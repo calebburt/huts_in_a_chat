@@ -7,16 +7,49 @@
       "sizes": "512x512"
     },
     {
-      "src": "/icon.png",
-      "type": "image/png",
+      "src": "/icon.svg",
+      "type": "image/svg",
       "sizes": "512x512",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ],
   "start_url": "/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay"
+  ],
   "scope": "/",
   "description": "A simple chat app built with Ruby on Rails.",
-  "theme_color": "red",
-  "background_color": "red"
+  "theme_color": "#323232",
+  "background_color": "#323232",
+  "short_name": "Huts in a Chat",
+  "orientation": "any",
+  "dir": "auto",
+  "shortcuts": [
+    {
+      "name": "Chats",
+      "url": "/chats",
+      "description": "Open Chats Listing"
+    },
+    {
+      "name": "Invite",
+      "url": "/auth/new",
+      "description": "Invite a new User"
+    }
+  ],
+  "categories": [
+    "social"
+  ],
+  "screenshots": [
+    {
+      "src": "<%= asset_path('chats.png') %>",
+      "type": "image/png",
+      "platform": "wide"
+    },
+    {
+      "src": "<%= asset_path('chat_view.png') %>",
+      "type": "image/png",
+      "platform": "wide"
+    }
+  ]
 }

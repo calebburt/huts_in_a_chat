@@ -1,26 +1,68 @@
-<div class="section" style="grid-row: 1; grid-column: 1; float: left; display: grid; grid-template-columns: auto fit-content(100%) fit-content(100%); grid-template-rows: fit-content(100%) 1fr auto; gap: 10px; height: 100%;">
-  <% content_for :title, @chat.name %>
-  
-  <h1><%= @chat.name %></h1>
-  <%= button_to "Destroy Chat", @chat, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
-  <%= button_to "Edit chat", edit_chat_path(@chat), method: :get, class: "btn btn-primary" %>
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; min-height: 0;">
+  <div id="messages_section" class="section"
+      style="
+        grid-row: 1;
+        grid-column: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 0;
+      ">
+    <% content_for :title, @chat.name %>
 
-  <div id="messages" class="section section-light" style="grid-row: 2; grid-column: 1 / -1; overflow-y: auto;">
-    <%= render @chat.messages %>
-  </div>
-
-  <%= form_with(model: [@chat, @chat.messages.build], id: "message_form") do |form| %>
-    <div class="field" style="grid-row: 3; grid-column: 1 / -1; display: flex; gap: 10px;">
-      <%= form.text_field :content, placeholder: "Type your message...", style: "flex: 1;" %>
-      <%= form.submit "Send", class: "btn btn-primary" %>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <h1 style="margin: 0;"><%= @chat.name %></h1>
+      <%= button_to "Destroy Chat", @chat, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+      <%= button_to "Edit chat", edit_chat_path(@chat), method: :get, class: "btn btn-primary" %>
     </div>
-  <% end %>
+
+    <div id="messages"
+        class="section section-light"
+        style="
+          flex: 1;
+          overflow-y: auto;
+          min-height: 0;
+        ">
+      <%= render @chat.messages %>
+    </div>
+
+    <%= form_with(model: [@chat, @chat.messages.build], id: "message_form") do |form| %>
+      <div class="field" style="display: flex; gap: 10px;">
+        <%= form.text_area :content,
+          placeholder: "Type your message...",
+          rows: 2,
+          class: "btn",
+          style: "flex: 1; resize: none;",
+          id: "message_input" %>
+          <script>
+            document.addEventListener("turbo:load", () => {
+              const input = document.getElementById("message_input");
+              const form  = document.getElementById("message_form");
+
+              input.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                  if (event.shiftKey) {
+                    // Allow newline
+                    return;
+                  } else {
+                    // Submit form
+                    event.preventDefault();
+                    form.requestSubmit();
+                  }
+                }
+              });
+            });
+          </script>
+        <%= form.submit "Send", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+  <%= turbo_stream_from @chat %>
+  <div id="members" class="section" style="grid-row: 1; grid-column: 2; ">
+    <h2>Members</h2>
+    <hr>
+    <% @chat.users.each do |user| %>
+      <p><%= link_to user.name, user, style: "color: white; text-decoration: none;" %></p>
+    <% end %>
+  </div>
 </div>
-<div class="section" style="float: right; height: 100%; grid-row: 1; grid-column: 2; ">
-  <h2>Members</h2>
-  <hr>
-  <% @chat.users.each do |user| %>
-    <p><%= user.name %></p>
-  <% end %>
-</div>
-<%= turbo_stream_from @chat %>

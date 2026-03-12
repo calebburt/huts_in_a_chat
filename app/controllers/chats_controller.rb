@@ -32,7 +32,7 @@ class ChatsController < ApplicationController
   # POST /chats or /chats.json
   def create
     @chat = Chat.new(chat_params)
-    logger.error chat_params
+    
     for user_id in params[:chat][:user_ids]
       begin
         @chat.users.append User.find(user_id.to_i)
@@ -54,6 +54,15 @@ class ChatsController < ApplicationController
 
   # PATCH/PUT /chats/1 or /chats/1.json
   def update
+    @chat.users = []
+    for user_id in params[:chat][:user_ids]
+      begin
+        @chat.users.append User.find(user_id.to_i)
+      rescue => _
+        logger.warn "Invalid user id: #{user_id.to_i}"
+      end
+    end
+
     respond_to do |format|
       if @chat.update(chat_params)
         format.html { redirect_to @chat, notice: "Chat was successfully updated.", status: :see_other }

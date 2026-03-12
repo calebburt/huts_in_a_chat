@@ -1,0 +1,10 @@
+<div class="section">
+    <h1><%= @user.name %></h1>
+    <% if session[:user_id] == @user.id %>
+        <%= button_to "Edit", edit_user_path(@user), class: "btn btn-primary", style: "float: right;", method: :get %>
+    <% end %>
+    <h2>Bio</h2>
+    <div class="section section-light"><%= render_markdown @user.bio %></div>
+    <h2>Background Picture</h2>
+    <img width="300px" src="<%= @user.img_url %>">
+</div>

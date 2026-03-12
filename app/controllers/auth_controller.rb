@@ -54,11 +54,11 @@ class AuthController < ApplicationController
   def login
     if request.post?
       user = User.find_by(email: params[:email])
-      if user.authenticate(params[:password])
+      if user&.authenticate(params[:password])
         session[:user_id] = user.id
         redirect_to root_path
       else
-        redirect_to auth_login_path
+        redirect_to auth_login_path, alert: "Incorrect username or password."
       end
     end
   end
@@ -66,5 +66,20 @@ class AuthController < ApplicationController
   def logout
     session[:user_id] = nil
     redirect_to root_path, notice: "Logged out successfully."
+  end
+
+  def push_subscriptions
+    if subscription = PushSubscription.find_by(push_subscription_params)
+      subscription.touch
+    else
+      PushSubscription.create! push_subscription_params.merge(user: User.find(session[:user_id]))
+    end
+
+    head :ok
+  end
+
+  private
+  def push_subscription_params
+    params.require(:push_subscription).permit(:endpoint, :p256dh_key, :auth_key)
   end
 end

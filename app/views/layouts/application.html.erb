@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <%= tag.meta name: "vapid-public-key", content: Rails.application.credentials.vapid.public %>
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -20,19 +22,29 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <% if session[:user_id] && User.find(session[:user_id]).img_url != "" %>
+      <style>
+        body {
+          background-image: url('<%= User.find(session[:user_id]).img_url %>')
+        }
+      </style>
+    <% end %>
   </head>
-
-  <body style="display: flex; flex-direction: column; height: 100vh;">
-    <header>
-      <h1>Huts in a Chat</h1>
-      <ul>
-        <li><%= link_to "Chats", chats_path %></li>
-        <li><%= link_to "Login", auth_login_path %></li>
-        <li><%= link_to "Invite", auth_new_path %></li>
-        <li><%= link_to "Logout", auth_logout_path %></li>
-      </ul>
+  
+  <body>
+    <header class="titlebar">
+      <img src="/icon.png" alt="Huts in a Chat Logo" style="vertical-align: middle; padding: 10px;">
+      <h1 style="vertical-align: middle;">Huts in a Chat</h1>
+      <% if session[:user_id] %>
+        <ul>
+          <li><%= link_to "Chats", chats_path %></li>
+          <li><%= link_to "Profile", user_path(User.find(session[:user_id])) %></li>
+          <li><%= link_to "Invite", auth_new_path %></li>
+          <li><%= link_to "Logout", auth_logout_path %></li>
+        </ul>
+      <% end %>
     </header>
-    <main style="display: grid; gap: 10px; flex: 1;">
+    <main>
       <% if notice %>
         <p style="color: green"><%= notice %></p>
       <% end %>
@@ -41,5 +53,74 @@
       <% end %>
       <%= yield %>
     </main>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/service-worker.js")
+            .catch(err => console.error("SW registration failed:", err));
+        });
+      }
+    </script>
+    <% if session[:user_id] %>
+    <script type="module">
+      const checkPermission = async () => {
+        switch (Notification.permission) {
+          case 'granted':
+            console.log('Permission to receive notifications has been granted');
+            break;
+          case 'denied':
+            console.log('Permission to receive notifications has been denied');
+            break;
+          default:
+            const permission = await Notification.requestPermission();
+            console.log(`Permission to receive notifications has been ${permission}`);
+            break;
+        }
+      };
+      checkPermission();
+
+      const vapidPublicKey = document.querySelector(
+        'meta[name="vapid-public-key"]',
+      ).content;
+
+      const subscribe = async () => {
+        const registration = await navigator.serviceWorker.ready;
+
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: vapidPublicKey,
+          });
+
+          if (!subscription) {
+            console.error('Web push subscription failed');
+          }
+        }
+
+        return subscription;
+      };
+
+      const subscription = await subscribe();
+      console.log(subscription);
+
+      import { post } from '@rails/request.js';
+
+      const registration = await navigator.serviceWorker.ready;
+
+      const {
+        endpoint,
+        keys: { p256dh, auth },
+      } = subscription.toJSON();
+
+      const body = JSON.stringify({
+        push_subscription: { endpoint, p256dh_key: p256dh, auth_key: auth },
+      });
+
+      post('/auth/push_subscriptions', { body });
+    </script>
+    <% end %>
   </body>
 </html>
