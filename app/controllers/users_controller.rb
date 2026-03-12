@@ -19,6 +19,10 @@ class UsersController < ApplicationController
     redirect_to root_path, notice: "Edited profile successfully."
   end
 
+  def index
+    @users = User.all
+  end
+
   private
   def user_params
     params.require(:user).permit(:bio, :email, :img_url)

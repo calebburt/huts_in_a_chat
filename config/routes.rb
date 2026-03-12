@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     resources :messages, only: [ :create ]
   end
 
-  resources :users, only: [ :show, :update, :edit ]
+  resources :users, only: [ :show, :update, :edit, :index ]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

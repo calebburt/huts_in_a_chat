@@ -11,9 +11,10 @@
 [] Markdown support
 [] better mobile
 [] Fix word wrapping
+[] users list
+
 ## Upto here
 
-[] users list
 [] multiline
 [] password reset
 [] remove saved info
