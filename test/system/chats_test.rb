@@ -7,7 +7,7 @@ class ChatsTest < ApplicationSystemTestCase
   end
 
   def sign_in_as(user)
-    page.driver.post '/auth/login', { 'email' => user.email, 'password' => 'password' }
+    page.driver.post "/auth/login", { "email" => user.email, "password" => "password" }
   end
 
   test "visiting the index" do
