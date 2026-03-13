@@ -4,10 +4,14 @@ one:
   name: Alice
   email: alice@example.com
   password_digest: <%= BCrypt::Password.create('password') %>
+  bio: "Hello, I'm Alice!"
+  img_url: ""
   confirmed: true
 
 two:
   name: Bob
   email: bob@example.com
   password_digest: <%= BCrypt::Password.create('password') %>
+  bio: "Hi, I'm Bob!"
+  img_url: "https://example.com/bob.jpg"
   confirmed: true
