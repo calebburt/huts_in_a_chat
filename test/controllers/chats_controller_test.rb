@@ -37,7 +37,7 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update chat" do
-    patch chat_url(@chat), params: { chat: { name: @chat.name } }
+    patch chat_url(@chat), params: { chat: { name: @chat.name, user_ids: @chat.user_ids } }
     assert_redirected_to chat_url(@chat)
   end
 
