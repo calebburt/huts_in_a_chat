@@ -7,8 +7,7 @@ class AuthControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get accept with valid token" do
-    token = invitation_tokens(:one)
-    token.update!(expires: 15.minutes.from_now)
+    token = InvitationToken.create!(token: SecureRandom.hex(10), expires: 15.minutes.from_now, user: users(:one))
     get auth_accept_url(token: token.token)
     assert_response :success
   end

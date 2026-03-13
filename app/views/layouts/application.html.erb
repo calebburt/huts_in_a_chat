@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    
-    <% if session[:user_id] %>
+
+    <% if session[:user_id] && Rails.env != "test" %>
       <%= tag.meta name: "vapid-public-key", content: Rails.application.credentials.vapid.public %>
     <% end %>
 
