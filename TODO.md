@@ -13,10 +13,10 @@
 [] Fix word wrapping
 [] users list
 [] max chars
+[] multiline
 
 ## Upto here
 
-[] multiline
 [] password reset
 [] remove saved info
 [] dms

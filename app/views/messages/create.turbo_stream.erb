@@ -1,8 +1,30 @@
 <%= turbo_stream.replace "message_form" do %>
   <%= form_with(model: [@chat, @chat.messages.build], id: "message_form") do |form| %>
     <div class="field" style="grid-row: 3; grid-column: 1 / -1; display: flex; gap: 10px;">
-      <%= form.text_field :content, placeholder: "Type your message...", style: "flex: 1;" %>
+      <%= form.text_area :content,
+        placeholder: "Type your message...",
+        rows: 2,
+        class: "btn",
+        style: "flex: 1; resize: none;",
+        id: "message_input" %>
       <%= form.submit "Send", class: "btn btn-primary" %>
     </div>
+    <script>
+      var input = document.getElementById("message_input");
+      var form  = document.getElementById("message_form");
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          if (event.shiftKey) {
+            // Allow newline
+            return;
+          } else {
+            // Submit form
+            event.preventDefault();
+            form.requestSubmit();
+          }
+        }
+      });
+    </script>
   <% end %>
 <% end %>
