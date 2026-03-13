@@ -32,7 +32,7 @@ class ChatsController < ApplicationController
   # POST /chats or /chats.json
   def create
     @chat = Chat.new(chat_params)
-    
+
     for user_id in params[:chat][:user_ids]
       begin
         @chat.users.append User.find(user_id.to_i)
