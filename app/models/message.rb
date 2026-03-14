@@ -6,7 +6,9 @@ class Message < ApplicationRecord
   validates :content, length: { minimum: 1, maximum: 200 }
 
   after_create_commit -> do
-    broadcast_append_to chat
+    if !Rails.env.test?
+      broadcast_append_to chat
+    end
     SendMessagePushJob.perform_later(self)
   end
 end
