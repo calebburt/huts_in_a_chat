@@ -1,3 +1,19 @@
 <%= tag.div id: dom_id(message) do %>
-  <p><small><%= message.user.name %></small> <%= render_markdown message.content %></p>
+  <% if message.user == User.find(session[:user_id]) %>
+    <div style="align-self: right; text-align: right;">
+      <p style="font-size: 0.8em; color: gray; margin-bottom: 5px; margin-left: 10px;">
+        You · <%= time_ago_in_words(message.created_at) %> ago
+      </p>
+      <div class="message message-you">
+        <%= render_markdown message.content %>
+      </div>
+    </div>
+  <% else %>
+    <p style="font-size: 0.8em; color: gray; margin-bottom: 5px; margin-left: 10px;">
+      <%= message.user.name %> · <%= time_ago_in_words(message.created_at) %> ago
+    </p>
+    <div class="message">
+      <%= render_markdown message.content %>
+    </div>
+  <% end %>
 <% end %>
