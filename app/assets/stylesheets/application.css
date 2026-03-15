@@ -11,6 +11,7 @@
 
 html, body {
   height: 100%;
+  scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
 }
 
 main {

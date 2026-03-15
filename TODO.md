@@ -16,11 +16,13 @@
 [x] max chars
 [x] multiline
 [x] better message partial
+[x] fix scrolling in lists
+[x] fix users view
+[x] auto-scroll to the bottom
 
 ## Upto here
 [ ] password reset
 [ ] remove saved info
 [ ] dms
-[ ] auto-scroll to the bottom
 [ ] background music
 [ ] profile picture
