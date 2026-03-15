@@ -11,6 +11,8 @@ class User < ApplicationRecord
 
   before_save :downcase_email
 
+  has_one_attached :avatar
+
   private
 
   def downcase_email

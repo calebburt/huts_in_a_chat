@@ -12,6 +12,6 @@ class MessagesController < ApplicationController
   private
 
   def message_params
-    { content: params[:message][:content], chat_id: params[:chat_id], user_id: session[:user_id] }
+    { content: params[:message][:content], chat_id: params[:chat_id], user_id: session[:user_id], attachment: params[:message][:attachment] }
   end
 end

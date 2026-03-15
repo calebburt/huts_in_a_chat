@@ -2,7 +2,7 @@
   <%= content_for :title, @user.name %>
 
   <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-    <h1 style="margin: 0;"><%= @user.name %></h1>
+    <h1 style="margin: 0;"><%= image_tag @user.avatar, style: "width: 20px;" if @user.avatar.attached? %><%= @user.name %></h1>
     <% if session[:user_id] == @user.id %>
       <%= link_to "Edit", edit_user_path(@user), class: "btn btn-primary" %>
     <% end %>

@@ -20,6 +20,16 @@
         </div>
 
         <div class="field">
+            <%= form.label :name, style: "display: block" %>
+            <%= form.text_field :name %>
+        </div>
+
+        <div class="field">
+            <%= form.label :avatar, style: "display: block" %>
+            <%= form.file_field :avatar, accept: "image/*" %>
+        </div>
+
+        <div class="field">
             <%= form.label :bio, style: "display: block" %>
             <%= form.text_area :bio, class: "btn" %>
         </div>

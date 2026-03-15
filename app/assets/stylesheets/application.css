@@ -251,5 +251,5 @@ option {
 }
 
 .message img {
-  max-width: min(100%, 200px);
+  width: min(60%, 200px);
 }

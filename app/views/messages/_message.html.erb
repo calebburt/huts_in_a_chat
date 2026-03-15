@@ -1,19 +1,27 @@
+<% is_own = message.user == User.find(session[:user_id]) %>
+<% alignment_style = is_own ? "align-self: right; text-align: right;" : "" %>
+<% message_class = is_own ? "message message-you" : "message" %>
+
 <%= tag.div id: dom_id(message) do %>
-  <% if message.user == User.find(session[:user_id]) %>
-    <div style="align-self: right; text-align: right;">
-      <p style="font-size: 0.8em; color: gray; margin-bottom: 5px; margin-left: 10px;">
-        You · <%= time_ago_in_words(message.created_at) %> ago
-      </p>
-      <div class="message message-you">
-        <%= render_markdown message.content %>
-      </div>
-    </div>
-  <% else %>
+  <div style="<%= alignment_style %>">
     <p style="font-size: 0.8em; color: gray; margin-bottom: 5px; margin-left: 10px;">
-      <%= message.user.name %> · <%= time_ago_in_words(message.created_at) %> ago
+      <%= is_own ? "You" : message.user.name %> · <%= time_ago_in_words(message.created_at) %> ago
     </p>
-    <div class="message">
+    <div class="<%= message_class %>">
       <%= render_markdown message.content %>
+      <% if message.attachment.attached? %>
+        <%= link_to message.attachment, target: "_blank", rel: "noopener noreferrer" do %>
+          <% if message.attachment.content_type.start_with?("image/") %>
+            <%= image_tag message.attachment %>
+          <%# <% elsif message.attachment.previewable? %>
+            <%# <%= image_tag message.attachment.preview(resize_to_limit: [200, 200]) %>
+          <% else %>
+            <p>
+              <span style="font-size: 2em;">📎</span> <%= message.attachment.filename %>
+            </p>
+          <% end %>
+        <% end %>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 <% end %>

@@ -15,7 +15,6 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
     @user.update(user_params)
-    print(@user, user_params)
     redirect_to root_path, notice: "Edited profile successfully."
   end
 
@@ -25,6 +24,6 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.require(:user).permit(:bio, :email, :img_url)
+    params.require(:user).permit(:bio, :email, :img_url, :name, :avatar)
   end
 end

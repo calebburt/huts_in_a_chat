@@ -7,6 +7,7 @@
         class: "btn",
         style: "flex: 1; resize: none;",
         id: "message_input" %>
+      <%= form.file_field :attachment %>
       <%= form.submit "Send", class: "btn btn-primary" %>
     </div>
     <script>

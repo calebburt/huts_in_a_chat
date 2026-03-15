@@ -36,8 +36,7 @@
           }
       }
 
-      // Example: Scroll after 500ms (e.g., after content loads)
-      setTimeout(scrollToBottom, 0);
+      setTimeout(scrollToBottom, 16);
     </script>
 
     <%= form_with(model: [@chat, @chat.messages.build], id: "message_form") do |form| %>
@@ -68,6 +67,7 @@
               });
             });
           </script>
+        <%= form.file_field :attachment %>
         <%= form.submit "Send", class: "btn btn-primary" %>
       </div>
     <% end %>
