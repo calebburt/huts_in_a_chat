@@ -3,7 +3,7 @@
 
     <%= form_with(model: @user, path: user_path(@user), method: :patch) do |form| %>
         <% if @user.errors.any? %>
-            <div style="color: red">
+            <div class="error-messages">
             <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
 
             <ul>
@@ -15,27 +15,27 @@
         <% end %>
 
         <div class="field">
-            <%= form.label :email, style: "display: block" %>
+            <%= form.label :email, class: "label-block" %>
             <%= form.email_field :email %>
         </div>
 
         <div class="field">
-            <%= form.label :name, style: "display: block" %>
+            <%= form.label :name, class: "label-block" %>
             <%= form.text_field :name %>
         </div>
 
         <div class="field">
-            <%= form.label :avatar, style: "display: block" %>
+            <%= form.label :avatar, class: "label-block" %>
             <%= form.file_field :avatar, accept: "image/*" %>
         </div>
 
         <div class="field">
-            <%= form.label :bio, style: "display: block" %>
+            <%= form.label :bio, class: "label-block" %>
             <%= form.text_area :bio, class: "btn" %>
         </div>
 
         <div class="field">
-            <%= form.label :img_url, style: "display: block" %>
+            <%= form.label :img_url, class: "label-block" %>
             <%= form.text_field :img_url %>
         </div>
 

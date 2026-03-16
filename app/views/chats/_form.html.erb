@@ -1,6 +1,6 @@
 <%= form_with(model: chat) do |form| %>
   <% if chat.errors.any? %>
-    <div style="color: red">
+    <div class="error-messages">
       <h2><%= pluralize(chat.errors.count, "error") %> prohibited this chat from being saved:</h2>
 
       <ul>
@@ -12,7 +12,7 @@
   <% end %>
 
   <div>
-    <%= form.label :name, style: "display: block" %>
+    <%= form.label :name, class: "label-block" %>
     <%= form.text_field :name %>
   </div>
 
@@ -21,7 +21,7 @@
   <div>
     <% users = User.all.collect {|user| [user.name, user.id] }.reject { |user| !User.find(user[1]).confirmed } %>
     <% # users = User.all.collect {|user| [user.name, user.id] }.reject {|user| user[1] == session[:user_id] } %>
-    <%= form.label "Users", style: "display: block" %>
+    <%= form.label "Users", class: "label-block" %>
     <%= form.select "user_ids", users, {}, { multiple: true, size: 10, class: "btn" } %>
   </div>
 

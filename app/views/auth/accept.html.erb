@@ -4,7 +4,7 @@
 
   <%= form_with model: @token.user, url: auth_signup_path, local: true, method: :post do |form| %>
     <% if @token.user.errors.any? %>
-      <div style="color: red">
+      <div class="error-messages">
         <h2><%= pluralize(@token.user.errors.count, "error") %> prohibited this chat from being saved:</h2>
         <ul>
           <% @token.user.errors.each do |error| %>

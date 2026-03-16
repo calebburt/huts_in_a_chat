@@ -1,27 +1,15 @@
-<div class="section"
-     style="
-       display: flex;
-       flex-direction: column;
-       gap: 10px;
-       height: 100%;
-       min-height: 0;
-     ">
+<div class="section chats-layout">
   <% content_for :title, "Chats" %>
 
-  <div style="display: flex; align-items: center; gap: 10px;">
-    <h1 style="margin: 0;">Chats</h1>
+  <div class="chats-header">
+    <h1 class="text-no-margin">Chats</h1>
     <%= button_to "New chat", new_chat_path, class: "btn btn-primary", method: :get %>
   </div>
 
-  <div id="chats"
-       style="
-         overflow-y: auto;
-         min-height: 0;
-         height: calc(100% - 100px);
-       ">
+  <div id="chats" class="chats-list">
     <hr>
     <% @chats.each do |chat| %>
-      <%= link_to chat, style: "text-decoration: none; color: white;" do %>
+      <%= link_to chat, class: "chat-link" do %>
         <h3><%= chat.name %></h3>
       <% end %>
       <hr>

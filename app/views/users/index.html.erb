@@ -1,23 +1,12 @@
-<div class="section" style="
-       display: flex;
-       flex-direction: column;
-       gap: 10px;
-       height: 100%;
-       min-height: 0;
-     ">
+<div class="section users-layout">
     <%= content_for :title, "Users" %>
     <h1>Users</h1>
 
     <hr>
-    <div id="users"
-       style="
-         overflow-y: auto;
-         min-height: 0;
-         height: calc(100% - 100px);
-       ">
+    <div id="users" class="users-list">
     <hr>
     <% @users.each do |user| %>
-      <%= link_to user, style: "text-decoration: none; color: white;" do %>
+      <%= link_to user, class: "chat-link" do %>
         <h3><%= user.name %></h3>
       <% end %>
       <hr>
