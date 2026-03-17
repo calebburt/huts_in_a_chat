@@ -19,10 +19,10 @@
 [x] fix scrolling in lists
 [x] fix users view
 [x] auto-scroll to the bottom
+[x] file uploads
+[x] profile picture
 
 ## Upto here
-[ ] file uploads
-[ ] profile picture
 [ ] password reset
 [ ] remove saved info
 [ ] dms

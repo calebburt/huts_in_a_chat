@@ -63,7 +63,7 @@
     <h2>Members</h2>
     <hr>
     <% @chat.users.each do |user| %>
-      <p><%= link_to user.name, user, class: "link-no-decoration" %></p>
+      <p><%= image_tag user.avatar, style: "width: 1em; height: 1em; border-radius: 20%; margin-right: 10px; object-fit: cover; vertical-align: middle;" if user.avatar.attached? %><%= link_to user.name, user, class: "link-no-decoration" %></p>
     <% end %>
   </div>
 </div>

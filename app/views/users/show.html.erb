@@ -2,7 +2,7 @@
   <%= content_for :title, @user.name %>
 
   <div class="page-header">
-    <h1><%= image_tag @user.avatar, style: "width: 20px;" if @user.avatar.attached? %><%= @user.name %></h1>
+    <h1><%= image_tag @user.avatar, style: "width: 1em; height: 1em; border-radius: 20%; margin-right: 10px; object-fit: cover; vertical-align: middle;" if @user.avatar.attached? %><%= @user.name %></h1>
     <% if session[:user_id] == @user.id %>
       <%= link_to "Edit", edit_user_path(@user), class: "btn btn-primary" %>
     <% end %>

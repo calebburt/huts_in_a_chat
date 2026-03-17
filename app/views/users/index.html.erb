@@ -7,7 +7,7 @@
     <hr>
     <% @users.each do |user| %>
       <%= link_to user, class: "chat-link" do %>
-        <h3><%= user.name %></h3>
+        <h3><%= image_tag user.avatar, style: "width: 1em; height: 1em; border-radius: 20%; margin-right: 10px; object-fit: cover; vertical-align: middle;" if user.avatar.attached? %><%= user.name %></h3>
       <% end %>
       <hr>
     <% end %>
