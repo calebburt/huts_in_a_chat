@@ -1,0 +1,15 @@
+<div class="section chats-layout">
+  <% content_for :title, "DMs" %>
+
+  <h1 class="text-no-margin">DMs</h1>
+
+  <div id="chats" class="chats-list">
+    <hr>
+    <% @users.each do |user| %>
+      <%= link_to dm_chat_path(user), class: "chat-link" do %>
+        <h3><%= user.name %></h3>
+      <% end %>
+      <hr>
+    <% end %>
+  </div>
+</div>

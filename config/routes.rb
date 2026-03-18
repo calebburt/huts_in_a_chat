@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get "users/show"
-  get "users/edit"
   get "auth/new"
   post "auth/create"
   get "auth/created"
@@ -12,6 +10,8 @@ Rails.application.routes.draw do
   post "auth/push_subscriptions"
 
   root "chats#index"
+  get "dms" => "chats#index_dm", as: :dm_chats
+  get "dms/:user_id" => "chats#dm", as: :dm_chat
 
   resources :chats do
     resources :messages, only: [ :create ]

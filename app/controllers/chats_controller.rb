@@ -3,7 +3,16 @@ class ChatsController < ApplicationController
 
   # GET /chats or /chats.json
   def index
-    @chats = Chat.joins(:users).where(users: { id: session[:user_id] }).distinct
+    @chats = Chat.where(chat_type: :group_chat).joins(:users).where(users: { id: session[:user_id] }).distinct
+  end
+
+  def index_dm
+    @users = User.where.not(id: session[:user_id]).where(confirmed: true)
+  end
+
+  def dm
+    @chat = Chat.find_or_create_dm(User.find(session[:user_id]), User.find(params[:user_id]))
+    redirect_to @chat
   end
 
   # GET /chats/1 or /chats/1.json
@@ -22,6 +31,7 @@ class ChatsController < ApplicationController
 
   # GET /chats/1/edit
   def edit
+    redirect_to root_path, status: :not_found unless @chat.group_chat? && @chat.users.include?(User.find(session[:user_id]))
     if Chat.find(params[:id]).users.include? User.find(session[:user_id])
       render
     else
@@ -31,9 +41,12 @@ class ChatsController < ApplicationController
 
   # POST /chats or /chats.json
   def create
-    @chat = Chat.new(chat_params)
+    redirect_to root_path, status: :not_found unless @chat.group_chat? && @chat.users.include?(User.find(session[:user_id]))
+    chat = chat_params
+    chat[:chat_type] = :group_chat
+    @chat = Chat.new(chat)
 
-    for user_id in params[:chat][:user_ids]
+    params[:chat][:user_ids].each do |user_id|
       begin
         @chat.users.append User.find(user_id.to_i)
       rescue => _
@@ -85,7 +98,6 @@ class ChatsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_chat
       @chat = Chat.find(params.expect(:id))
     end
