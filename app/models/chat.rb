@@ -1,5 +1,5 @@
 class Chat < ApplicationRecord
-  has_many :messages, dependent: :destroy
+  has_many :messages
   has_and_belongs_to_many :users
 
   enum :chat_type, { group_chat: "group", dm: "dm" }
