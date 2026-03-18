@@ -89,8 +89,7 @@ class ChatsController < ApplicationController
 
   # DELETE /chats/1 or /chats/1.json
   def destroy
-    @chat.messages.each(&:destroy)
-    @chat.destroy
+    @chat.destroy!
 
     respond_to do |format|
       format.html { redirect_to chats_path, notice: "Chat was successfully destroyed.", status: :see_other }
@@ -100,7 +99,7 @@ class ChatsController < ApplicationController
 
   private
     def set_chat
-      @chat = Chat.find(params[:id])
+      @chat = Chat.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
