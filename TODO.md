@@ -21,9 +21,10 @@
 [x] auto-scroll to the bottom
 [x] file uploads
 [x] profile picture
+[x] dms
 
 ## Upto here
+[ ] calling
 [ ] password reset
 [ ] remove saved info
-[ ] dms
 [ ] background music
