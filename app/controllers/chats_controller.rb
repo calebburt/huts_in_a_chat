@@ -41,8 +41,8 @@ class ChatsController < ApplicationController
 
   # POST /chats or /chats.json
   def create
-    redirect_to root_path, status: :not_found unless @chat.group_chat? && @chat.users.include?(User.find(session[:user_id]))
     chat = chat_params
+    redirect_to root_path, notice: "Chat created, but you are not in it." unless chat.group_chat? && chat.users.include?(User.find(session[:user_id]))
     chat[:chat_type] = :group_chat
     @chat = Chat.new(chat)
 
