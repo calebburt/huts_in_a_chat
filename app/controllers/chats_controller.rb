@@ -45,14 +45,18 @@ class ChatsController < ApplicationController
     
     chat[:chat_type] = :group_chat
     @chat = Chat.new(chat)
-    redirect_to root_path, notice: "Chat created, but you are not in it." unless @chat.users.include?(User.find(session[:user_id]))
-
+    
     params[:chat][:user_ids].each do |user_id|
       begin
         @chat.users.append User.find(user_id.to_i)
       rescue => _
         logger.warn "Invalid user id: #{user_id.to_i}"
       end
+    end
+
+    unless @chat.users.include?(User.find(session[:user_id]))
+      redirect_to root_path, notice: "Chat created, but you are not in it." 
+      return
     end
 
     respond_to do |format|
