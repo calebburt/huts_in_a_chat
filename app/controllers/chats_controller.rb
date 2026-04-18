@@ -31,7 +31,10 @@ class ChatsController < ApplicationController
 
   # GET /chats/1/edit
   def edit
-    redirect_to root_path, status: :not_found unless @chat.group_chat? && @chat.users.include?(User.find(session[:user_id]))
+    unless @chat.group_chat? && @chat.users.include?(User.find(session[:user_id]))
+      redirect_to root_path, status: :not_found
+      return
+    end
     if Chat.find(params[:id]).users.include? User.find(session[:user_id])
       render
     else
