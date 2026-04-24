@@ -1,4 +1,5 @@
-<% is_own = message.user == User.find(session[:user_id]) %>
+<% is_own = message.user_id == current_user.id %>
+<% can_moderate = is_own || current_user.is_moderator? %>
 <% alignment_class = is_own ? "message-own-alignment" : "" %>
 <% message_class = is_own ? "message message-you" : "message" %>
 
@@ -7,8 +8,8 @@
       controller: "message-menu",
       message_menu_is_own_value: is_own,
       message_menu_content_value: message.content.to_s,
-      message_menu_edit_url_value: is_own ? edit_chat_message_path(message.chat, message) : "",
-      message_menu_delete_url_value: is_own ? chat_message_path(message.chat, message) : ""
+      message_menu_edit_url_value: can_moderate ? edit_chat_message_path(message.chat, message) : "",
+      message_menu_delete_url_value: can_moderate ? chat_message_path(message.chat, message) : ""
     } do %>
   <div class="<%= alignment_class %>">
     <p class="message-meta">
@@ -35,7 +36,7 @@
   <template data-message-menu-target="template">
     <div class="context-menu" hidden>
       <button type="button" data-menu-action="copy">Copy text</button>
-      <% if is_own %>
+      <% if can_moderate %>
         <button type="button" data-menu-action="edit">Edit</button>
         <button type="button" data-menu-action="delete">Delete</button>
       <% end %>

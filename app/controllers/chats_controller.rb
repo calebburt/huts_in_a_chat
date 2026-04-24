@@ -1,9 +1,15 @@
 class ChatsController < ApplicationController
   before_action :set_chat, only: %i[ show edit update destroy ]
+  before_action :authorize_manage, only: %i[ edit update destroy ]
 
   # GET /chats or /chats.json
   def index
-    @chats = Chat.where(chat_type: :group_chat).joins(:users).where(users: { id: session[:user_id] }).distinct
+    if current_user.is_moderator?
+      @chats = Chat.where(chat_type: :group_chat).distinct
+      @shown_as_moderator = true
+    else
+      @chats = Chat.where(chat_type: :group_chat).joins(:users).where(users: { id: current_user.id }).distinct
+    end
   end
 
   def index_dm
@@ -11,14 +17,22 @@ class ChatsController < ApplicationController
   end
 
   def dm
-    @chat = Chat.find_or_create_dm(User.find(session[:user_id]), User.find(params[:user_id]))
+    target = User.find_by(id: params[:user_id])
+    if target.nil? || !target.confirmed? || target.id == current_user.id
+      redirect_to dm_chats_path, alert: "Cannot start that DM."
+      return
+    end
+    @chat = Chat.find_or_create_dm(current_user, target)
     redirect_to @chat
   end
 
   # GET /chats/1 or /chats/1.json
   def show
-    if Chat.find(params[:id]).users.include? User.find(session[:user_id])
+    if @chat.users.include?(current_user)
       @message = Message.new
+    elsif current_user.is_moderator?
+      @message = Message.new
+      @shown_as_moderator = true
     else
       redirect_to root_path, status: :not_found
     end
@@ -31,34 +45,19 @@ class ChatsController < ApplicationController
 
   # GET /chats/1/edit
   def edit
-    unless @chat.group_chat? && @chat.users.include?(User.find(session[:user_id]))
-      redirect_to root_path, status: :not_found
-      return
-    end
-    if Chat.find(params[:id]).users.include? User.find(session[:user_id])
-      render
-    else
+    unless @chat.group_chat?
       redirect_to root_path, status: :not_found
     end
   end
 
   # POST /chats or /chats.json
   def create
-    chat = chat_params
-    
-    chat[:chat_type] = :group_chat
-    @chat = Chat.new(chat)
-    
-    params[:chat][:user_ids].each do |user_id|
-      begin
-        @chat.users.append User.find(user_id.to_i)
-      rescue => _
-        logger.warn "Invalid user id: #{user_id.to_i}"
-      end
-    end
+    @chat = Chat.new(chat_params.merge(chat_type: :group_chat))
 
-    unless @chat.users.include?(User.find(session[:user_id]))
-      redirect_to root_path, notice: "Chat created, but you are not in it." 
+    assign_users_from_params(@chat)
+
+    unless @chat.users.include?(current_user)
+      redirect_to root_path, alert: "Chat was not created: you must include yourself."
       return
     end
 
@@ -76,13 +75,7 @@ class ChatsController < ApplicationController
   # PATCH/PUT /chats/1 or /chats/1.json
   def update
     @chat.users = []
-    for user_id in params[:chat][:user_ids]
-      begin
-        @chat.users.append User.find(user_id.to_i)
-      rescue => _
-        logger.warn "Invalid user id: #{user_id.to_i}"
-      end
-    end
+    assign_users_from_params(@chat)
 
     respond_to do |format|
       if @chat.update(chat_params)
@@ -110,8 +103,29 @@ class ChatsController < ApplicationController
       @chat = Chat.find(params.expect(:id))
     end
 
+    def authorize_manage
+      if @chat.users.include?(current_user)
+        # allowed as member
+      elsif current_user.is_moderator?
+        @shown_as_moderator = true
+      else
+        redirect_to root_path, status: :not_found
+      end
+    end
+
     # Only allow a list of trusted parameters through.
     def chat_params
-      params.expect(chat: [ :name, :user_ids ])
+      params.expect(chat: [ :name ])
+    end
+
+    def assign_users_from_params(chat)
+      Array(params.dig(:chat, :user_ids)).each do |user_id|
+        user = User.find_by(id: user_id.to_i)
+        if user
+          chat.users.append(user) unless chat.users.include?(user)
+        else
+          logger.warn "Invalid user id: #{user_id.to_i}"
+        end
+      end
     end
 end

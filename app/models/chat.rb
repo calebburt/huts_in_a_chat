@@ -9,7 +9,7 @@ class Chat < ApplicationRecord
   scope :between, ->(u1, u2) {
     where(chat_type: :dm)
       .joins(:users)
-      .where(users: { id: [u1.id, u2.id] })
+      .where(users: { id: [ u1.id, u2.id ] })
       .group("chats.id")
       .having("COUNT(users.id) = 2")
   }
@@ -20,6 +20,6 @@ class Chat < ApplicationRecord
     return existing if existing
 
     # Otherwise create a new one
-    Chat.create!(chat_type: :dm, users: [user1, user2], name: "#{user1.name} & #{user2.name}")
+    Chat.create!(chat_type: :dm, users: [ user1, user2 ], name: "#{user1.name} & #{user2.name}")
   end
 end

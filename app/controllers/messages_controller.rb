@@ -1,9 +1,10 @@
 class MessagesController < ApplicationController
+  before_action :set_chat, only: [ :create ]
+  before_action :authorize_chat_access, only: [ :create ]
   before_action :set_message, only: [ :edit, :update, :destroy ]
-  before_action :require_owner, only: [ :edit, :update, :destroy ]
+  before_action :require_owner_or_moderator, only: [ :edit, :update, :destroy ]
 
   def create
-    @chat = Chat.find(params[:chat_id])
     @message = @chat.messages.create(message_params)
     if !@message.errors.empty?
       logger.error(@message.errors.full_messages)
@@ -46,17 +47,25 @@ class MessagesController < ApplicationController
 
   private
 
+  def set_chat
+    @chat = Chat.find(params[:chat_id])
+  end
+
   def set_message
     @message = Message.find(params[:id])
   end
 
-  def require_owner
-    unless @message.user_id == session[:user_id]
-      redirect_to chat_path(@message.chat), alert: "Not allowed"
-    end
+  def authorize_chat_access
+    return if @chat.users.include?(current_user) || current_user.is_moderator?
+    redirect_to root_path, alert: "Not allowed", status: :not_found
+  end
+
+  def require_owner_or_moderator
+    return if @message.user_id == current_user.id || current_user.is_moderator?
+    redirect_to chat_path(@message.chat), alert: "Not allowed"
   end
 
   def message_params
-    { content: params[:message][:content], chat_id: params[:chat_id], user_id: session[:user_id], attachment: params[:message][:attachment] }
+    { content: params[:message][:content], chat_id: params[:chat_id], user_id: current_user.id, attachment: params[:message][:attachment] }
   end
 end

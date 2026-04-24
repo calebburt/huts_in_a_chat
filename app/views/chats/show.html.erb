@@ -2,7 +2,11 @@
   <div id="messages_section" class="section messages-section">
     <% content_for :title, @chat.name %>
 
-    <div class="chat-header">
+    <div class="chat-header"
+    <% if @shown_as_moderator %>
+      style="background-color: rgba(255, 128, 0, 0.4); padding: 5px; border-radius: 12px;"
+    <% end %>
+    >
       <h1 class="text-no-margin"><%= @chat.name %></h1>
       <%= button_to "Destroy Chat", @chat, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
       <%= button_to "Edit chat", edit_chat_path(@chat), method: :get, class: "btn btn-primary" if @chat.group_chat? %>

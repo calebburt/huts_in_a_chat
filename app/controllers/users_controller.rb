@@ -1,15 +1,12 @@
 class UsersController < ApplicationController
+  before_action :require_self, only: [ :edit, :update ]
+
   def show
     @user = User.find(params[:id])
   end
 
   def edit
-    logger.error(params)
-    @user = User.find(params[:id].to_i)
-    logger.error(session[:user_id])
-    if params[:id].to_i != session[:user_id]
-      redirect_to root_path, alert: "User not found."
-    end
+    @user = User.find(params[:id])
   end
 
   def update
@@ -23,6 +20,12 @@ class UsersController < ApplicationController
   end
 
   private
+  def require_self
+    unless params[:id].to_i == current_user.id
+      redirect_to root_path, alert: "User not found."
+    end
+  end
+
   def user_params
     params.require(:user).permit(:bio, :email, :img_url, :name, :avatar)
   end
