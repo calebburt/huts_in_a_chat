@@ -13,4 +13,12 @@ class Message < ApplicationRecord
     end
     SendMessagePushJob.perform_later(self)
   end
+
+  after_update_commit -> do
+    broadcast_replace_to chat unless Rails.env.test?
+  end
+
+  after_destroy_commit -> do
+    broadcast_remove_to chat unless Rails.env.test?
+  end
 end

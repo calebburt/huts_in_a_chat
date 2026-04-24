@@ -2,7 +2,14 @@
 <% alignment_class = is_own ? "message-own-alignment" : "" %>
 <% message_class = is_own ? "message message-you" : "message" %>
 
-<%= tag.div id: dom_id(message) do %>
+<%= tag.div id: dom_id(message),
+    data: {
+      controller: "message-menu",
+      message_menu_is_own_value: is_own,
+      message_menu_content_value: message.content.to_s,
+      message_menu_edit_url_value: is_own ? edit_chat_message_path(message.chat, message) : "",
+      message_menu_delete_url_value: is_own ? chat_message_path(message.chat, message) : ""
+    } do %>
   <div class="<%= alignment_class %>">
     <p class="message-meta">
       <%= is_own ? "You" : message.user.name %> · <%= time_ago_in_words(message.created_at) %> ago
@@ -24,4 +31,14 @@
       <% end %>
     </div>
   </div>
+
+  <template data-message-menu-target="template">
+    <div class="context-menu" hidden>
+      <button type="button" data-menu-action="copy">Copy text</button>
+      <% if is_own %>
+        <button type="button" data-menu-action="edit">Edit</button>
+        <button type="button" data-menu-action="delete">Delete</button>
+      <% end %>
+    </div>
+  </template>
 <% end %>

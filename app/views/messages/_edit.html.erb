@@ -1,0 +1,12 @@
+<%= tag.div id: dom_id(message) do %>
+  <div class="message-own-alignment">
+    <p class="message-meta">You · editing</p>
+    <%= form_with model: [message.chat, message], method: :patch, class: "message-edit-form" do |f| %>
+      <%= f.text_area :content, rows: 2, class: "btn message-input" %>
+      <div>
+        <%= f.submit "Save", class: "btn btn-primary btn-no-margin" %>
+        <button type="button" class="btn btn-no-margin" onclick="window.location.reload()">Cancel</button>
+      </div>
+    <% end %>
+  </div>
+<% end %>
