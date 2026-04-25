@@ -50,11 +50,30 @@
       <% end %>
     </header>
     <main>
-      <% if notice %>
-        <p class="flash-notice"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="flash-alert"><%= alert %></p>
+      <% if notice || alert %>
+        <div class="flash-toasts" role="region" aria-label="Notifications">
+          <% if notice %>
+            <div class="flash flash--notice" role="status" data-controller="flash">
+              <svg class="flash__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15"/>
+                <path d="M7 12.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="flash__message"><%= notice %></span>
+              <button type="button" class="flash__close" aria-label="Dismiss" data-action="flash#dismiss">&times;</button>
+            </div>
+          <% end %>
+          <% if alert %>
+            <div class="flash flash--alert" role="alert" data-controller="flash">
+              <svg class="flash__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15"/>
+                <path d="M12 7v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                <circle cx="12" cy="16.5" r="1.2" fill="currentColor"/>
+              </svg>
+              <span class="flash__message"><%= alert %></span>
+              <button type="button" class="flash__close" aria-label="Dismiss" data-action="flash#dismiss">&times;</button>
+            </div>
+          <% end %>
+        </div>
       <% end %>
       <%= yield %>
     </main>
