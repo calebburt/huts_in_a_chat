@@ -1,5 +1,5 @@
-<% is_own = message.user_id == current_user.id %>
-<% can_moderate = is_own || current_user.is_moderator? %>
+<% is_own = current_user && message.user_id == current_user.id %>
+<% can_moderate = is_own || (current_user && current_user.is_moderator?) %>
 <% alignment_class = is_own ? "message-own-alignment" : "" %>
 <% message_class = is_own ? "message message-you" : "message" %>
 

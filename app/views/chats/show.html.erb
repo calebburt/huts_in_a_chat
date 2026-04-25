@@ -62,7 +62,7 @@
       </div>
     <% end %>
   </div>
-  <%= turbo_stream_from @chat %>
+  <%= turbo_stream_from [ @chat, current_user ] %>
   <div id="members" class="section members-section">
     <h2>Members</h2>
     <hr>

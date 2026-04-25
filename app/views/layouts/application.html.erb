@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <% if session[:user_id] && Rails.env != "test" %>
+    <% if current_user && Rails.env != "test" %>
       <%= tag.meta name: "vapid-public-key", content: Rails.application.credentials.vapid.public %>
     <% end %>
 
@@ -25,10 +25,10 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <% if session[:user_id] && User.find(session[:user_id]).img_url != "" %>
+    <% if current_user && current_user.img_url.present? %>
       <style>
         body {
-          background-image: url('<%= User.find(session[:user_id]).img_url %>')
+          background-image: url('<%= current_user.img_url %>')
         }
       </style>
     <% end %>
@@ -38,10 +38,10 @@
     <header class="titlebar">
       <img src="/icon.png" alt="Huts in a Chat Logo" class="vertical-align-middle padding-10">
       <h1 class="vertical-align-middle">Huts in a Chat</h1>
-      <% if session[:user_id] %>
+      <% if current_user %>
         <ul>
           <li><%= link_to "Chats", chats_path %></li>
-          <li><%= link_to "Profile", user_path(User.find(session[:user_id])) %></li>
+          <li><%= link_to "Profile", user_path(current_user) %></li>
           <li><%= link_to "Users", users_path %></li>
           <li><%= link_to "DMs", dm_chats_path %></li>
           <li><%= link_to "Invite", auth_new_path %></li>
@@ -67,7 +67,7 @@
         });
       }
     </script>
-    <% if session[:user_id] %>
+    <% if current_user %>
     <script type="module">
       const checkPermission = async () => {
         switch (Notification.permission) {
@@ -89,19 +89,31 @@
         'meta[name="vapid-public-key"]',
       ).content;
 
+      // Firefox/Safari require a Uint8Array applicationServerKey; only
+      // Chrome accepts the raw URL-safe base64 string.
+      const urlBase64ToUint8Array = (base64String) => {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        const raw = atob(base64);
+        const out = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; ++i) out[i] = raw.charCodeAt(i);
+        return out;
+      };
+
       const subscribe = async () => {
         const registration = await navigator.serviceWorker.ready;
 
         let subscription = await registration.pushManager.getSubscription();
 
         if (!subscription) {
-          subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: vapidPublicKey,
-          });
-
-          if (!subscription) {
-            console.error('Web push subscription failed');
+          try {
+            subscription = await registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+            });
+          } catch (err) {
+            console.error('Web push subscription failed:', err);
+            return null;
           }
         }
 
@@ -109,22 +121,20 @@
       };
 
       const subscription = await subscribe();
-      console.log(subscription);
+      if (subscription) {
+        const { post } = await import('@rails/request.js');
 
-      import { post } from '@rails/request.js';
+        const {
+          endpoint,
+          keys: { p256dh, auth },
+        } = subscription.toJSON();
 
-      const registration = await navigator.serviceWorker.ready;
+        const body = JSON.stringify({
+          push_subscription: { endpoint, p256dh_key: p256dh, auth_key: auth },
+        });
 
-      const {
-        endpoint,
-        keys: { p256dh, auth },
-      } = subscription.toJSON();
-
-      const body = JSON.stringify({
-        push_subscription: { endpoint, p256dh_key: p256dh, auth_key: auth },
-      });
-
-      post('/auth/push_subscriptions', { body });
+        post('/auth/push_subscriptions', { body, contentType: 'application/json' });
+      }
     </script>
     <% end %>
   </body>

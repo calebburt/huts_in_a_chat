@@ -72,7 +72,7 @@ class AuthController < ApplicationController
     if subscription = PushSubscription.find_by(push_subscription_params)
       subscription.touch
     else
-      PushSubscription.create! push_subscription_params.merge(user: User.find(session[:user_id]))
+      PushSubscription.create! push_subscription_params.merge(user: current_user)
     end
 
     head :ok

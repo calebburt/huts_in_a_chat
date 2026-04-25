@@ -373,6 +373,23 @@ option {
   color: white;
 }
 
+.error-page {
+  text-align: center;
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-page h1 {
+  font-size: 6em;
+  margin: 0 0 0.2em;
+  color: #45AC70;
+}
+
+.error-page p {
+  margin: 0.5em 0;
+}
+
 .image-width-300 {
   width: 300px;
 }

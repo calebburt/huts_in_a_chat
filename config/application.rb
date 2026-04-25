@@ -27,5 +27,9 @@ module HutsChatNew
     # Not in config because of assets precompilation
     # config.x.vapid_private = Rails.application.credentials.vapid.private
     # config.x.vapid_public = Rails.application.credentials.vapid.public
+
+    # Render error pages through the application's routes/layout instead of
+    # the bare static files in public/.
+    config.exceptions_app = self.routes
   end
 end

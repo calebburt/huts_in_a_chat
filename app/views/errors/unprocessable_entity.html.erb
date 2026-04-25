@@ -1,0 +1,8 @@
+<% content_for :title, "Bad request" %>
+
+<div class="error-page">
+  <h1>422</h1>
+  <p>The change you wanted was rejected.</p>
+  <p>Maybe you tried to change something you didn't have access to.</p>
+  <p><%= link_to "Back to Chats", root_path, class: "btn btn-primary" %></p>
+</div>

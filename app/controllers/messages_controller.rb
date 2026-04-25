@@ -57,7 +57,7 @@ class MessagesController < ApplicationController
 
   def authorize_chat_access
     return if @chat.users.include?(current_user) || current_user.is_moderator?
-    redirect_to root_path, alert: "Not allowed", status: :not_found
+    redirect_to root_path, alert: "Not allowed"
   end
 
   def require_owner_or_moderator

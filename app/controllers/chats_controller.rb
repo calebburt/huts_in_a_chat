@@ -13,7 +13,7 @@ class ChatsController < ApplicationController
   end
 
   def index_dm
-    @users = User.where.not(id: session[:user_id]).where(confirmed: true)
+    @users = User.where.not(id: current_user.id).where(confirmed: true)
   end
 
   def dm

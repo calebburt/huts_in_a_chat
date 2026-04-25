@@ -3,10 +3,15 @@ class ApplicationController < ActionController::Base
   # allow_browser versions: :modern
 
   helper_method :current_user
+  before_action :set_current_user
   before_action :require_login
 
   def current_user
-    @current_user ||= User.find_by(id: session[:user_id])
+    Current.user
+  end
+
+  def set_current_user
+    Current.user = User.find_by(id: session[:user_id])
   end
 
   def require_login
