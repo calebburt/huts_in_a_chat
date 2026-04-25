@@ -11,11 +11,16 @@ export default class extends Controller {
   }
 
   connect() {
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Safari/i.test(navigator.userAgent)
+
     this._onContextMenu = this._onContextMenu.bind(this)
     this._onDocMouseDown = this._onDocMouseDown.bind(this)
     this._onKey = this._onKey.bind(this)
 
     this.element.addEventListener("contextmenu", this._onContextMenu)
+    if (isMobile) {
+      this.element.addEventListener('click', this._onContextMenu)
+    }
 
     // Build the menu from the template and attach it to body so
     // `position: fixed` is relative to the viewport, not a
@@ -51,6 +56,8 @@ export default class extends Controller {
   }
 
   _onContextMenu(event) {
+    const bubble = this.element.querySelector(".message")
+    if (!bubble || !bubble.contains(event.target)) return
     event.preventDefault()
     const menu = this._menu
     if (this._picker) this._picker.hidden = true
