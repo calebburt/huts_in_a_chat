@@ -17,50 +17,89 @@
     </div>
 
     <script>
-      function scrollToBottom() {
-          const box = document.getElementById("messages");
+      (() => {
+        const box = document.getElementById("messages");
+        if (!box) return;
 
-          if (box) {
-              // Set scrollTop to the maximum scroll height
-              box.scrollTop = box.scrollHeight;
-          }
-      }
+        const NEAR_BOTTOM_PX = 120;
+        const scrollToBottom = () => { box.scrollTop = box.scrollHeight; };
+        const isNearBottom = () =>
+          box.scrollHeight - box.scrollTop - box.clientHeight < NEAR_BOTTOM_PX;
 
-      setTimeout(scrollToBottom, 16);
+        // Track whether the user was near the bottom *before* the next mutation,
+        // since appending a message grows scrollHeight and would otherwise make
+        // the post-mutation check always read as "far from bottom".
+        let stickToBottom = true;
+        box.addEventListener("scroll", () => { stickToBottom = isNearBottom(); });
+
+        scrollToBottom();
+        requestAnimationFrame(scrollToBottom);
+
+        new MutationObserver(() => {
+          if (stickToBottom) scrollToBottom();
+        }).observe(box, { childList: true });
+
+        // Image attachments finish loading after insertion and grow scrollHeight.
+        box.addEventListener("load", (event) => {
+          if (event.target.tagName === "IMG" && stickToBottom) scrollToBottom();
+        }, true);
+      })();
     </script>
 
-    <%= form_with(model: [@chat, @chat.messages.build], id: "message_form") do |form| %>
-      <div class="field message-form-field">
-        <%= form.text_area :content,
-          placeholder: "Type your message...",
-          rows: 2,
-          class: "btn message-input",
-          id: "message_input",
-          autofocus: true %>
-          <script>
-            document.addEventListener("turbo:load", () => {
-              const input = document.getElementById("message_input");
-              const form  = document.getElementById("message_form");
+    <script>
+      (() => {
+        // Mirrors Rails's distance_of_time_in_words (include_seconds: false),
+        // so the live label matches the server-rendered text exactly.
+        const pluralize = (n, singular) => `${n} ${n === 1 ? singular : singular + "s"}`;
+        const MIN_IN_YEAR = 525600;
+        const MIN_IN_QUARTER_YEAR = MIN_IN_YEAR / 4;
 
-              input.addEventListener("keydown", (event) => {
-                if (event.key === "Enter") {
-                  if (event.shiftKey) {
-                    // Allow newline
-                    return;
-                  } else {
-                    // Submit form
-                    event.preventDefault();
-                    form.requestSubmit();
-                  }
-                }
-              });
-            });
-          </script>
-        <%= form.label :attachment, style: "display: inline;", class: "btn" %>
-        <%= form.file_field :attachment, style: "display: none;" %>
-        <%= form.submit "Send", class: "btn btn-primary" %>
-      </div>
-    <% end %>
+        const timeAgoInWords = (date) => {
+          const minutes = Math.round((Date.now() - date.getTime()) / 60000);
+          if (minutes < 1)      return "less than a minute";
+          if (minutes === 1)    return "1 minute";
+          if (minutes <= 44)    return `${minutes} minutes`;
+          if (minutes <= 89)    return "about 1 hour";
+          if (minutes <= 1439)  return `about ${Math.round(minutes / 60)} hours`;
+          if (minutes <= 2519)  return "1 day";
+          if (minutes <= 43199) return `${Math.round(minutes / 1440)} days`;
+          if (minutes <= 86399) return "about 1 month";
+          if (minutes <= 525599) return `about ${Math.round(minutes / 43200)} months`;
+          const years = Math.floor(minutes / MIN_IN_YEAR);
+          const remainder = minutes % MIN_IN_YEAR;
+          if (remainder < MIN_IN_QUARTER_YEAR)     return `about ${pluralize(years, "year")}`;
+          if (remainder < MIN_IN_QUARTER_YEAR * 3) return `over ${pluralize(years, "year")}`;
+          return `almost ${pluralize(years + 1, "year")}`;
+        };
+
+        const update = () => {
+          document.querySelectorAll("time[data-live-time]").forEach((el) => {
+            const dt = el.getAttribute("datetime");
+            if (!dt) return;
+            const next = timeAgoInWords(new Date(dt)) + " ago";
+            if (el.textContent !== next) el.textContent = next;
+          });
+        };
+
+        update();
+
+        // Avoid stacking intervals if this view re-renders via Turbo navigation.
+        if (window.__liveTimeInterval) clearInterval(window.__liveTimeInterval);
+        window.__liveTimeInterval = setInterval(update, 30000);
+
+        // Observe direct children of #messages only — NOT subtree — because our
+        // own textContent writes to <time> nodes are childList mutations inside
+        // the subtree and would re-trigger the observer, hanging the page.
+        // Top-level childList is enough: appends, turbo_stream replaces of a
+        // message dom_id, and removes all mutate #messages' direct children.
+        const messages = document.getElementById("messages");
+        if (messages) {
+          new MutationObserver(update).observe(messages, { childList: true });
+        }
+      })();
+    </script>
+
+    <%= render "messages/form" %>
   </div>
   <%= turbo_stream_from [ @chat, current_user ] %>
   <div id="members" class="section members-section">

@@ -13,7 +13,7 @@
     } do %>
   <div class="<%= alignment_class %>">
     <p class="message-meta">
-      <%= is_own ? "You" : message.user.name %> · <%= time_ago_in_words(message.created_at) %> ago
+      <%= is_own ? "You" : message.user.name %> · <time datetime="<%= message.created_at.iso8601 %>" data-live-time><%= time_ago_in_words(message.created_at) %> ago</time>
     </p>
     <div class="<%= message_class %>">
       <%= render_markdown message.content %>
