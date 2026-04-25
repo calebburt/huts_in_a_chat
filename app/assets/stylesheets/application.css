@@ -160,6 +160,54 @@ header ul li a:hover {
   text-decoration: underline;
 }
 
+@media screen and (max-width: 640px) {
+  header.titlebar {
+    flex-wrap: wrap;
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
+  header.titlebar img {
+    height: 28px;
+    padding: 2px 4px;
+  }
+
+  header.titlebar h1 {
+    font-size: 18px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  header.titlebar ul {
+    flex-basis: 100%;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  header.titlebar ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  header.titlebar ul li {
+    display: block;
+    padding: 0;
+    flex: 0 0 auto;
+  }
+
+  header.titlebar ul li a {
+    display: block;
+    padding: 6px 10px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}
+
 .btn, input, button, select {
   display: inline-block;
   padding: 10px 20px;
@@ -190,6 +238,13 @@ option {
 .btn-danger {
   background-color: #D9534F;
   color: white;
+}
+
+.btn-icon {
+  padding: 10px 12px;
+  font-size: 18px;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 @media screen and (max-width: 700px) {

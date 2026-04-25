@@ -25,8 +25,8 @@
           });
         })();
       </script>
-    <%= form.label :attachment, style: "display: inline;", class: "btn" %>
+    <%= form.label :attachment, "📎", class: "btn btn-icon", aria: { label: "Attach file" }, title: "Attach file", style: "display: inline;" %>
     <%= form.file_field :attachment, style: "display: none;" %>
-    <%= form.submit "Send", class: "btn btn-primary" %>
+    <%= form.submit "➤", class: "btn btn-primary btn-icon", aria: { label: "Send" }, title: "Send" %>
   </div>
 <% end %>
