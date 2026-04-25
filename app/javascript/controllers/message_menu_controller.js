@@ -1,12 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["template"]
+  static targets = ["template", "picker"]
   static values = {
     isOwn: Boolean,
     content: String,
     editUrl: String,
-    deleteUrl: String
+    deleteUrl: String,
+    reactionsUrl: String
   }
 
   connect() {
@@ -25,9 +26,20 @@ export default class extends Controller {
       btn.addEventListener("click", (e) => {
         e.preventDefault()
         const action = btn.dataset.menuAction
-        if (typeof this[action] === "function") this[action]()
+        if (typeof this[action] === "function") this[action](e)
       })
     })
+
+    // The full picker lives inside the menu but starts hidden; the "+"
+    // quick-reaction button toggles it.
+    this._picker = this._menu.querySelector("emoji-picker")
+    if (this._picker) {
+      this._picker.addEventListener("emoji-click", (e) => {
+        this._sendReaction(e.detail.unicode)
+        this._close()
+      })
+    }
+
     document.body.appendChild(this._menu)
   }
 
@@ -41,6 +53,7 @@ export default class extends Controller {
   _onContextMenu(event) {
     event.preventDefault()
     const menu = this._menu
+    if (this._picker) this._picker.hidden = true
     menu.hidden = false
     menu.style.left = `${event.clientX}px`
     menu.style.top = `${event.clientY}px`
@@ -64,6 +77,7 @@ export default class extends Controller {
 
   _close() {
     if (this._menu) this._menu.hidden = true
+    if (this._picker) this._picker.hidden = true
     document.removeEventListener("mousedown", this._onDocMouseDown, true)
     document.removeEventListener("keydown", this._onKey)
   }
@@ -74,6 +88,22 @@ export default class extends Controller {
 
   _onKey(event) {
     if (event.key === "Escape") this._close()
+  }
+
+  // Stimulus action — also wired as a menu-action for quick buttons.
+  // Reads the emoji from the clicked element's data-emoji attribute, so
+  // the same handler serves both the quick-reaction buttons in the menu
+  // and the reaction chips below the message.
+  react(event) {
+    const emoji = event.currentTarget?.dataset?.emoji
+    if (!emoji) return
+    this._sendReaction(emoji)
+    this._close()
+  }
+
+  togglePicker() {
+    if (!this._picker) return
+    this._picker.hidden = !this._picker.hidden
   }
 
   async copy() {
@@ -110,5 +140,20 @@ export default class extends Controller {
       const html = await res.text()
       if (html) window.Turbo.renderStreamMessage(html)
     }
+  }
+
+  async _sendReaction(emoji) {
+    const url = this.reactionsUrlValue
+    if (!url) return
+    const token = document.querySelector('meta[name="csrf-token"]')?.content
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token || "",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({ reaction: { emoji } })
+    })
   }
 }

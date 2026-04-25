@@ -502,7 +502,7 @@ option {
   min-width: 140px;
   padding: 4px;
   border-radius: 8px;
-  background-color: rgba(40, 40, 40, 0.95);
+  background-color: rgba(40, 40, 40, 0.6);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(200, 200, 200, 0.2);
@@ -528,6 +528,96 @@ option {
 
 .context-menu button:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.quick-reactions {
+  display: flex;
+  gap: 2px;
+  padding: 4px 2px;
+}
+
+.context-menu button.quick-reaction {
+  all: unset;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.context-menu button.quick-reaction:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: scale(1.15);
+}
+
+.context-menu button.quick-reaction-more {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+}
+
+.emoji-picker-popover {
+  --background: rgba(40, 40, 40, 0.2);
+  --border-color: rgba(200, 200, 200, 0.2);
+  --border-radius: 12px;
+  margin-top: 4px;
+  height: 320px;
+  width: 100%;
+}
+
+.emoji-picker-popover[hidden] {
+  display: none;
+}
+
+.reactions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: -24px;
+  margin-left: 6px;
+  margin-right: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.message-own-alignment .reactions-row {
+  justify-content: flex-end;
+}
+
+.reaction-chip {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background-color: rgba(120, 120, 120, 0.18);
+  border: 1px solid transparent;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.reaction-chip:hover {
+  background-color: rgba(120, 120, 120, 0.28);
+}
+
+.reaction-chip-mine {
+  background-color: #45AC7073;
+  border-color: #45AC7093;
+}
+
+.reaction-emoji {
+  font-size: 14px;
+}
+
+.reaction-count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
 }
 
 .message-edit-form .message-input {

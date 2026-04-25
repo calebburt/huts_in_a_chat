@@ -1,0 +1,18 @@
+<% groups = message.reactions.includes(:user).group_by(&:emoji) %>
+<% if groups.any? %>
+  <div class="reactions-row">
+    <% groups.each do |emoji, reactions| %>
+      <% mine = current_user && reactions.any? { |r| r.user_id == current_user.id } %>
+      <button type="button"
+              class="reaction-chip <%= 'reaction-chip-mine' if mine %>"
+              data-action="message-menu#react"
+              data-emoji="<%= emoji %>"
+              title="<%= reactions.map { |r| r.user.name }.join(', ') %>">
+        <span class="reaction-emoji"><%= emoji %></span>
+        <% if reactions.size > 1 %>
+          <span class="reaction-count"><%= reactions.size %></span>
+        <% end %>
+      </button>
+    <% end %>
+  </div>
+<% end %>

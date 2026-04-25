@@ -1,9 +1,10 @@
 class Message < ApplicationRecord
   belongs_to :chat
   belongs_to :user
+  has_many :reactions, dependent: :destroy
 
   validates :content, presence: true, if: -> { !attachment.attached? }
-  validates :content, length: { maximum: 200 }
+  validates :content, length: { maximum: 500 }
 
   has_one_attached :attachment
 

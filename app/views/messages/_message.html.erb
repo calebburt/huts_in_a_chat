@@ -2,6 +2,7 @@
 <% can_moderate = is_own || (current_user && current_user.is_moderator?) %>
 <% alignment_class = is_own ? "message-own-alignment" : "" %>
 <% message_class = is_own ? "message message-you" : "message" %>
+<% quick_emojis = %w[👍 ❤️ 😂 🎉 😮 😢] %>
 
 <%= tag.div id: dom_id(message),
     data: {
@@ -9,7 +10,8 @@
       message_menu_is_own_value: is_own,
       message_menu_content_value: message.content.to_s,
       message_menu_edit_url_value: can_moderate ? edit_chat_message_path(message.chat, message) : "",
-      message_menu_delete_url_value: can_moderate ? chat_message_path(message.chat, message) : ""
+      message_menu_delete_url_value: can_moderate ? chat_message_path(message.chat, message) : "",
+      message_menu_reactions_url_value: chat_message_reactions_path(message.chat, message)
     } do %>
   <div class="<%= alignment_class %>">
     <p class="message-meta">
@@ -31,10 +33,18 @@
         <% end %>
       <% end %>
     </div>
+    <%= render "messages/reactions", message: message %>
   </div>
 
   <template data-message-menu-target="template">
     <div class="context-menu" hidden>
+      <div class="quick-reactions">
+        <% quick_emojis.each do |emoji| %>
+          <button type="button" class="quick-reaction" data-menu-action="react" data-emoji="<%= emoji %>"><%= emoji %></button>
+        <% end %>
+        <button type="button" class="quick-reaction quick-reaction-more" data-menu-action="togglePicker" aria-label="More emojis">+</button>
+      </div>
+      <emoji-picker class="emoji-picker-popover" data-message-menu-target="picker" hidden></emoji-picker>
       <button type="button" data-menu-action="copy">Copy text</button>
       <% if can_moderate %>
         <button type="button" data-menu-action="edit">Edit</button>

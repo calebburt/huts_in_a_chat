@@ -7,7 +7,6 @@ class MessagesController < ApplicationController
   def create
     @message = @chat.messages.create(message_params)
     if !@message.errors.empty?
-      logger.error(@message.errors.full_messages)
       redirect_to chat_path(@chat), alert: @message.errors.full_messages.join(", ")
       return
     end
