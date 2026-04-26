@@ -1,10 +1,21 @@
 class Message < ApplicationRecord
+  # Types we'll happily render inline as <img> in the message bubble. Anything
+  # else (SVG, HTML, PDF, …) is shown as a download link with forced
+  # Content-Disposition: attachment so the user has to download to view.
+  INLINE_IMAGE_TYPES = %w[image/png image/jpeg image/gif image/webp].freeze
+  MAX_ATTACHMENT_BYTES = 50.megabytes
+  # Attachments larger than this are auto-purged by PurgeLargeAttachmentsJob
+  # once they reach LARGE_ATTACHMENT_TTL. Smaller attachments are kept forever.
+  LARGE_ATTACHMENT_BYTES = 10.megabytes
+  LARGE_ATTACHMENT_TTL = 2.months
+
   belongs_to :chat
   belongs_to :user
   has_many :reactions, dependent: :destroy
 
   validates :content, presence: true, if: -> { !attachment.attached? }
   validates :content, length: { maximum: 500 }
+  validate :validate_attachment
 
   has_one_attached :attachment
 
@@ -46,6 +57,15 @@ class Message < ApplicationRecord
       when :remove
         broadcast_remove_to(stream)
       end
+    end
+  end
+
+  def validate_attachment
+    return unless attachment.attached?
+
+    if attachment.blob.byte_size > MAX_ATTACHMENT_BYTES
+      errors.add(:attachment, "is too large (max #{MAX_ATTACHMENT_BYTES / 1.megabyte}MB)")
+      attachment.purge_later
     end
   end
 end

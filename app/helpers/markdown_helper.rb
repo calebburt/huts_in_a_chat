@@ -21,7 +21,10 @@ module MarkdownHelper
     return "" if text.blank?
 
     renderer = HTMLRenderer.new(
-      filter_html: true,  # Prevent raw HTML injection
+      filter_html: true,       # Strip raw HTML tags
+      escape_html: true,       # Belt-and-braces: HTML-escape any that survive
+      safe_links_only: true,   # Block javascript:/data: URLs in [text](url) and ![](url)
+      no_styles: true,         # Strip <style> in case filter_html is bypassed
       hard_wrap: true
     )
 

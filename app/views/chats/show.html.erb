@@ -16,7 +16,7 @@
       <%= render @chat.messages %>
     </div>
 
-    <script>
+    <%= javascript_tag nonce: true do %>
       (() => {
         const box = document.getElementById("messages");
         if (!box) return;
@@ -44,9 +44,9 @@
           if (event.target.tagName === "IMG" && stickToBottom) scrollToBottom();
         }, true);
       })();
-    </script>
+    <% end %>
 
-    <script>
+    <%= javascript_tag nonce: true do %>
       (() => {
         // Mirrors Rails's distance_of_time_in_words (include_seconds: false),
         // so the live label matches the server-rendered text exactly.
@@ -97,7 +97,7 @@
           new MutationObserver(update).observe(messages, { childList: true });
         }
       })();
-    </script>
+    <% end %>
 
     <%= render "messages/form" %>
   </div>

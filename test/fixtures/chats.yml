@@ -2,6 +2,8 @@
 
 one:
   name: MyString
+  chat_type: group
 
 two:
   name: MyString
+  chat_type: group

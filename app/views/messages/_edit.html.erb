@@ -5,7 +5,7 @@
       <%= f.text_area :content, rows: 2, class: "btn message-input" %>
       <div>
         <%= f.submit "Save", class: "btn btn-primary btn-no-margin" %>
-        <button type="button" class="btn btn-no-margin" onclick="window.location.reload()">Cancel</button>
+        <%= link_to "Cancel", chat_path(message.chat), class: "btn btn-no-margin" %>
       </div>
     <% end %>
   </div>

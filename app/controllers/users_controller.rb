@@ -11,8 +11,11 @@ class UsersController < ApplicationController
 
   def update
     @user = User.find(params[:id])
-    @user.update(user_params)
-    redirect_to root_path, notice: "Edited profile successfully."
+    if @user.update(user_params)
+      redirect_to root_path, notice: "Edited profile successfully."
+    else
+      redirect_to edit_user_path(@user), alert: @user.errors.full_messages.join(", ")
+    end
   end
 
   def index
@@ -27,6 +30,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:bio, :email, :img_url, :name, :avatar)
+    params.require(:user).permit(:bio, :img_url, :name, :avatar)
   end
 end

@@ -1,6 +1,7 @@
 class ChatsController < ApplicationController
   before_action :set_chat, only: %i[ show edit update destroy ]
   before_action :authorize_manage, only: %i[ edit update destroy ]
+  before_action :require_group_chat, only: %i[ edit update destroy ]
 
   # GET /chats or /chats.json
   def index
@@ -45,9 +46,6 @@ class ChatsController < ApplicationController
 
   # GET /chats/1/edit
   def edit
-    unless @chat.group_chat?
-      redirect_to root_path, status: :not_found
-    end
   end
 
   # POST /chats or /chats.json
@@ -111,6 +109,11 @@ class ChatsController < ApplicationController
       else
         redirect_to root_path, status: :not_found
       end
+    end
+
+    def require_group_chat
+      return if @chat.group_chat?
+      redirect_to root_path, status: :not_found
     end
 
     # Only allow a list of trusted parameters through.

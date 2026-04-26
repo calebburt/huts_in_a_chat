@@ -20,11 +20,11 @@
     <div class="<%= message_class %>">
       <%= render_markdown message.content %>
       <% if message.attachment.attached? %>
-        <%= link_to message.attachment, target: "_blank", rel: "noopener noreferrer" do %>
-          <% if message.attachment.content_type.start_with?("image/") %>
+        <% safe_inline = Message::INLINE_IMAGE_TYPES.include?(message.attachment.content_type) %>
+        <%= link_to rails_blob_path(message.attachment, disposition: safe_inline ? "inline" : "attachment"),
+                    target: "_blank", rel: "noopener noreferrer" do %>
+          <% if safe_inline %>
             <%= image_tag message.attachment, class: is_own ? "attachment-image-own" : "attachment-image-other" %>
-          <%# <% elsif message.attachment.previewable? %>
-            <%# <%= image_tag message.attachment.preview(resize_to_limit: [200, 200]) %>
           <% else %>
             <p>
               <span class="attachment-icon">📎</span> <%= message.attachment.filename %>

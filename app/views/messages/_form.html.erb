@@ -6,7 +6,7 @@
       class: "btn message-input",
       id: "message_input",
       autofocus: true %>
-      <script>
+      <%= javascript_tag nonce: true do %>
         (() => {
           const input = document.getElementById("message_input");
           const form  = document.getElementById("message_form");
@@ -24,7 +24,7 @@
             }
           });
         })();
-      </script>
+      <% end %>
     <%= form.label :attachment, "📎", class: "btn btn-icon", aria: { label: "Attach file" }, title: "Attach file", style: "display: inline;" %>
     <%= form.file_field :attachment, style: "display: none;" %>
     <%= form.submit "➤", class: "btn btn-primary btn-icon", aria: { label: "Send" }, title: "Send" %>

@@ -45,7 +45,7 @@
           <li><%= link_to "Users", users_path %></li>
           <li><%= link_to "DMs", dm_chats_path %></li>
           <li><%= link_to "Invite", auth_new_path %></li>
-          <li><%= link_to "Logout", auth_logout_path %></li>
+          <li><%= button_to "Logout", auth_logout_path, method: :post, form: { style: "display:inline" }, class: "link-button" %></li>
         </ul>
       <% end %>
     </header>
@@ -77,7 +77,7 @@
       <% end %>
       <%= yield %>
     </main>
-    <script>
+    <%= javascript_tag nonce: true do %>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
@@ -85,9 +85,9 @@
             .catch(err => console.error("SW registration failed:", err));
         });
       }
-    </script>
+    <% end %>
     <% if current_user %>
-    <script type="module">
+    <%= javascript_tag nonce: true, type: "module" do %>
       const checkPermission = async () => {
         switch (Notification.permission) {
           case 'granted':
@@ -154,7 +154,7 @@
 
         post('/auth/push_subscriptions', { body, contentType: 'application/json' });
       }
-    </script>
+    <% end %>
     <% end %>
   </body>
 </html>

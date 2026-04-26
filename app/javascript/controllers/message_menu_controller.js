@@ -19,7 +19,7 @@ export default class extends Controller {
 
     this.element.addEventListener("contextmenu", this._onContextMenu)
     if (isMobile) {
-      this.element.addEventListener('click', this._onContextMenu)
+      this.element.addEventListener('touchstart', this._onContextMenu)
     }
 
     // Build the menu from the template and attach it to body so
@@ -29,6 +29,11 @@ export default class extends Controller {
     this._menu = frag.querySelector(".context-menu")
     this._menu.querySelectorAll("[data-menu-action]").forEach(btn => {
       btn.addEventListener("click", (e) => {
+        e.preventDefault()
+        const action = btn.dataset.menuAction
+        if (typeof this[action] === "function") this[action](e)
+      })
+      btn.addEventListener("touchstart", (e) => {
         e.preventDefault()
         const action = btn.dataset.menuAction
         if (typeof this[action] === "function") this[action](e)

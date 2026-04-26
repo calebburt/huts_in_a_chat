@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   get "auth/accept"
   get "auth/login"
   post "auth/login"
-  get "auth/logout"
+  post "auth/logout"
   post "auth/push_subscriptions"
 
   root "chats#index"

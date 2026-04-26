@@ -1,5 +1,13 @@
 class AuthController < ApplicationController
   skip_before_action :require_login, except: [ :new, :create, :created ]
+
+  rate_limit to: 10, within: 1.hour, only: :create,
+             with: -> { redirect_to auth_new_path, alert: "Too many invitations created. Try again later." }
+  rate_limit to: 10, within: 5.minutes, only: :login,
+             with: -> { redirect_to auth_login_path, alert: "Too many attempts. Try again in a few minutes." }
+  rate_limit to: 10, within: 1.hour, only: :signup,
+             with: -> { redirect_to root_path, alert: "Too many signup attempts. Try again later." }
+
   def new
     @user = User.new
     @token = InvitationToken.new
@@ -9,19 +17,16 @@ class AuthController < ApplicationController
     user = User.new(confirmed: false)
     user.save(validate: false)
     logger.error user.errors.full_messages unless user.persisted?
-    @token = InvitationToken.create(token: SecureRandom.hex(10), expires: 15.minutes.from_now, user: user)
+    @token = InvitationToken.create(token: SecureRandom.hex(16), expires: 15.minutes.from_now, user: user)
     redirect_to auth_created_path(token: @token.token)
   end
 
   def created
     @token = InvitationToken.find_by(token: params[:token])
-    unless @token
-      redirect_to auth_login_path, alert: "Invalid token."
-    end
+    redirect_to auth_login_path, alert: "Invalid token." unless @token
   end
 
   def accept
-    logger.error "accepting token"
     @token = InvitationToken.find_by(token: params[:token])
     if @token && @token.expires > Time.current
       render
@@ -35,16 +40,17 @@ class AuthController < ApplicationController
     if token && token.expires > Time.current
       user = token.user
       user.name = params[:user][:name]
-      user.email = params[:user][:email]
+      user.email = params[:user][:email].to_s.downcase
       user.password = params[:user][:password]
       user.confirmed = true
       if user.save
+        reset_session
         session[:user_id] = user.id
         token.delete
         redirect_to root_path, notice: "Signup successful. You are now logged in."
       else
-        logger.error user.errors
-        redirect_to auth_accept_path(token: token.token), alert: "Failed to create account. Please try again."
+        logger.error user.errors.full_messages
+        redirect_to auth_accept_path(token: token.token), alert: "Failed to create account: #{user.errors.full_messages.join(', ')}"
       end
     else
       redirect_to root_path, alert: "Invalid or expired token."
@@ -53,8 +59,9 @@ class AuthController < ApplicationController
 
   def login
     if request.post?
-      user = User.find_by(email: params[:email])
+      user = User.find_by(email: params[:email].to_s.downcase)
       if user&.authenticate(params[:password])
+        reset_session
         session[:user_id] = user.id
         redirect_to root_path
       else
@@ -64,15 +71,16 @@ class AuthController < ApplicationController
   end
 
   def logout
-    session[:user_id] = nil
+    reset_session
     redirect_to root_path, notice: "Logged out successfully."
   end
 
   def push_subscriptions
-    if subscription = PushSubscription.find_by(push_subscription_params)
-      subscription.touch
+    subscription = current_user.push_subscriptions.find_by(endpoint: push_subscription_params[:endpoint])
+    if subscription
+      subscription.update(push_subscription_params)
     else
-      PushSubscription.create! push_subscription_params.merge(user: current_user)
+      current_user.push_subscriptions.create!(push_subscription_params)
     end
 
     head :ok
