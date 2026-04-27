@@ -5,26 +5,8 @@
       rows: 2,
       class: "btn message-input",
       id: "message_input",
-      autofocus: true %>
-      <%= javascript_tag nonce: true do %>
-        (() => {
-          const input = document.getElementById("message_input");
-          const form  = document.getElementById("message_form");
-
-          input.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-              if (event.shiftKey) {
-                // Allow newline
-                return;
-              } else {
-                // Submit form
-                event.preventDefault();
-                form.requestSubmit();
-              }
-            }
-          });
-        })();
-      <% end %>
+      autofocus: true,
+      data: { controller: "submit-on-enter" } %>
     <%= form.label :attachment, "📎", class: "btn btn-icon", aria: { label: "Attach file" }, title: "Attach file", style: "display: inline;" %>
     <%= form.file_field :attachment, style: "display: none;" %>
     <%= form.submit "➤", class: "btn btn-primary btn-icon", aria: { label: "Send" }, title: "Send" %>

@@ -48,4 +48,36 @@ class ChatsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to chats_url
   end
+
+  test "index_dm returns user list via JSON API" do
+    api_key = ApiKey.create_random(@user).plaintext_key
+    get dm_chats_url(format: :json), headers: { "X-Api-Key" => api_key }
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert body.is_a?(Array)
+    refute body.any? { |u| u["id"] == @user.id }, "DM partner list must exclude self"
+  end
+
+  test "dm finds-or-creates a DM and returns chat JSON" do
+    api_key = ApiKey.create_random(@user).plaintext_key
+    target = users(:two)
+    assert_difference("Chat.count", 1) do
+      get dm_chat_url(target, format: :json), headers: { "X-Api-Key" => api_key }
+    end
+    assert_response :success
+    body = JSON.parse(response.body)
+    assert_equal "dm", body["chat_type"]
+
+    # Idempotent: second call returns the same chat without creating a new one.
+    assert_no_difference("Chat.count") do
+      get dm_chat_url(target, format: :json), headers: { "X-Api-Key" => api_key }
+    end
+    assert_equal body["id"], JSON.parse(response.body)["id"]
+  end
+
+  test "dm rejects targeting self with 422" do
+    api_key = ApiKey.create_random(@user).plaintext_key
+    get dm_chat_url(@user, format: :json), headers: { "X-Api-Key" => api_key }
+    assert_response :unprocessable_entity
+  end
 end

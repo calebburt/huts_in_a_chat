@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  key_digest: digest_one_placeholder
+  user: one
+  expiry: <%= 1.year.from_now %>
+
+two:
+  key_digest: digest_two_placeholder
+  user: two
+  expiry: <%= 1.year.from_now %>

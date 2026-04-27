@@ -12,39 +12,9 @@
       <%= button_to "Edit chat", edit_chat_path(@chat), method: :get, class: "btn btn-primary" if @chat.group_chat? %>
     </div>
 
-    <div id="messages" class="section section-light messages-container">
+    <div id="messages" class="section section-light messages-container" data-controller="auto-scroll">
       <%= render @chat.messages %>
     </div>
-
-    <%= javascript_tag nonce: true do %>
-      (() => {
-        const box = document.getElementById("messages");
-        if (!box) return;
-
-        const NEAR_BOTTOM_PX = 120;
-        const scrollToBottom = () => { box.scrollTop = box.scrollHeight; };
-        const isNearBottom = () =>
-          box.scrollHeight - box.scrollTop - box.clientHeight < NEAR_BOTTOM_PX;
-
-        // Track whether the user was near the bottom *before* the next mutation,
-        // since appending a message grows scrollHeight and would otherwise make
-        // the post-mutation check always read as "far from bottom".
-        let stickToBottom = true;
-        box.addEventListener("scroll", () => { stickToBottom = isNearBottom(); });
-
-        scrollToBottom();
-        requestAnimationFrame(scrollToBottom);
-
-        new MutationObserver(() => {
-          if (stickToBottom) scrollToBottom();
-        }).observe(box, { childList: true });
-
-        // Image attachments finish loading after insertion and grow scrollHeight.
-        box.addEventListener("load", (event) => {
-          if (event.target.tagName === "IMG" && stickToBottom) scrollToBottom();
-        }, true);
-      })();
-    <% end %>
 
     <%= javascript_tag nonce: true do %>
       (() => {

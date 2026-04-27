@@ -6,12 +6,16 @@ class MessagesController < ApplicationController
 
   def create
     @message = @chat.messages.create(message_params)
-    if !@message.errors.empty?
-      redirect_to chat_path(@chat), alert: @message.errors.full_messages.join(", ")
+    if @message.errors.any?
+      respond_to do |format|
+        format.json { render json: { errors: @message.errors.full_messages }, status: :unprocessable_entity }
+        format.any(:html, :turbo_stream) { redirect_to chat_path(@chat), alert: @message.errors.full_messages.join(", ") }
+      end
       return
     end
 
     respond_to do |format|
+      format.json { render :show, status: :created }
       format.turbo_stream
       format.html { redirect_to chat_path(@chat) }
     end
@@ -25,13 +29,17 @@ class MessagesController < ApplicationController
   end
 
   def update
-    if @message.update(content: params[:message][:content])
+    if @message.update(message_update_params)
       respond_to do |format|
+        format.json { render :show }
         format.turbo_stream
         format.html { redirect_to chat_path(@message.chat) }
       end
     else
-      redirect_to chat_path(@message.chat), alert: @message.errors.full_messages.join(", ")
+      respond_to do |format|
+        format.json { render json: { errors: @message.errors.full_messages }, status: :unprocessable_entity }
+        format.any(:html, :turbo_stream) { redirect_to chat_path(@message.chat), alert: @message.errors.full_messages.join(", ") }
+      end
     end
   end
 
@@ -39,6 +47,7 @@ class MessagesController < ApplicationController
     chat = @message.chat
     @message.destroy
     respond_to do |format|
+      format.json { head :no_content }
       format.turbo_stream { render turbo_stream: turbo_stream.remove(@message) }
       format.html { redirect_to chat_path(chat) }
     end
@@ -56,15 +65,27 @@ class MessagesController < ApplicationController
 
   def authorize_chat_access
     return if @chat.users.include?(current_user) || current_user.is_moderator?
-    redirect_to root_path, alert: "Not allowed"
+    deny_access(root_path)
   end
 
   def require_owner_or_moderator
     return if @message.user_id == current_user.id || current_user.is_moderator?
-    redirect_to chat_path(@message.chat), alert: "Not allowed"
+    deny_access(chat_path(@message.chat))
+  end
+
+  def deny_access(html_redirect)
+    respond_to do |format|
+      format.json { render json: { error: "Not allowed" }, status: :forbidden }
+      format.any(:html, :turbo_stream) { redirect_to html_redirect, alert: "Not allowed" }
+    end
   end
 
   def message_params
-    { content: params[:message][:content], chat_id: params[:chat_id], user_id: current_user.id, attachment: params[:message][:attachment] }
+    params.expect(message: [ :content, :attachment ])
+          .merge(chat_id: params[:chat_id], user_id: current_user.id)
+  end
+
+  def message_update_params
+    params.expect(message: [ :content ])
   end
 end

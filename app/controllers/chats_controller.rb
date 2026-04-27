@@ -20,11 +20,17 @@ class ChatsController < ApplicationController
   def dm
     target = User.find_by(id: params[:user_id])
     if target.nil? || !target.confirmed? || target.id == current_user.id
-      redirect_to dm_chats_path, alert: "Cannot start that DM."
+      respond_to do |format|
+        format.html { redirect_to dm_chats_path, alert: "Cannot start that DM." }
+        format.json { render json: { error: "Cannot start that DM." }, status: :unprocessable_entity }
+      end
       return
     end
     @chat = Chat.find_or_create_dm(current_user, target)
-    redirect_to @chat
+    respond_to do |format|
+      format.html { redirect_to @chat }
+      format.json { render "chats/show" }
+    end
   end
 
   # GET /chats/1 or /chats/1.json

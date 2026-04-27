@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  defaults format: :json do
+    post "api/create"
+    post "api/signup"
+    post "api/invitation"
+    delete "api/logout"
+  end
   get "auth/new"
   post "auth/create"
   get "auth/created"
