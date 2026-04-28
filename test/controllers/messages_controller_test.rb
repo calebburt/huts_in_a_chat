@@ -8,6 +8,52 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
     @chat.users << @user unless @chat.users.include?(@user)
   end
 
+  test "index returns older messages as turbo_stream and updates sentinel" do
+    chat = Chat.create!(chat_type: :group_chat, name: "Pagi", users: [ @user ])
+    total = Message::PAGE_SIZE + 5
+    created = total.times.map { |i| chat.messages.create!(user: @user, content: "msg #{i}") }
+    cursor = created.last.id
+
+    get chat_messages_url(chat, before_id: cursor),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html", response.media_type
+
+    # Older messages get inserted after the sentinel; the next-oldest message
+    # (the one just before our cursor) should appear in the response.
+    assert_match(/turbo-stream action="after" target="messages_top_sentinel"/, response.body)
+    assert_match(/msg #{total - 2}/, response.body)
+    # More than one page of older messages remain, so the sentinel should be
+    # replaced rather than removed.
+    assert_match(/turbo-stream action="replace" target="messages_top_sentinel"/, response.body)
+  end
+
+  test "index removes the sentinel when no more messages remain" do
+    chat = Chat.create!(chat_type: :group_chat, name: "Short", users: [ @user ])
+    created = Message::PAGE_SIZE.times.map { |i| chat.messages.create!(user: @user, content: "msg #{i}") }
+    cursor = created.last.id
+
+    get chat_messages_url(chat, before_id: cursor),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :success
+    assert_match(/turbo-stream action="remove" target="messages_top_sentinel"/, response.body)
+  end
+
+  test "index rejects missing or invalid before_id" do
+    get chat_messages_url(@chat),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :bad_request
+  end
+
+  test "index forbids non-members who aren't moderators" do
+    other = users(:two)
+    sign_in_as other
+    get chat_messages_url(@chat, before_id: 999_999),
+        headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    # deny_access redirects on html/turbo_stream; just check it didn't 200.
+    assert_not_equal 200, response.status
+  end
+
   test "should create message" do
     assert_difference("Message.count") do
       post chat_messages_url(@chat), params: { message: { content: "Hello world" } }

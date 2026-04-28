@@ -12,8 +12,13 @@
       <%= button_to "Edit chat", edit_chat_path(@chat), method: :get, class: "btn btn-primary" if @chat.group_chat? %>
     </div>
 
-    <div id="messages" class="section section-light messages-container" data-controller="auto-scroll">
-      <%= render @chat.messages %>
+    <div id="messages" class="section section-light messages-container"
+         data-controller="auto-scroll infinite-scroll"
+         data-infinite-scroll-url-value="<%= chat_messages_path(@chat) %>">
+      <% if @has_more_messages %>
+        <%= render "chats/messages_top_sentinel", before_id: @messages.first.id %>
+      <% end %>
+      <%= render @messages %>
     </div>
 
     <%= javascript_tag nonce: true do %>

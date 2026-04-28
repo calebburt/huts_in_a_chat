@@ -42,7 +42,15 @@ class ChatsController < ApplicationController
       @shown_as_moderator = true
     else
       redirect_to root_path, status: :not_found
+      return
     end
+
+    # Load the most recent page of messages, then reverse for ascending display.
+    # Fetch one extra so we can tell whether older messages exist without a
+    # second COUNT query.
+    recent = @chat.messages.order(id: :desc).limit(Message::PAGE_SIZE + 1).to_a
+    @has_more_messages = recent.size > Message::PAGE_SIZE
+    @messages = recent.first(Message::PAGE_SIZE).reverse
   end
 
   # GET /chats/new

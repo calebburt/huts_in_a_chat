@@ -1,8 +1,27 @@
 class MessagesController < ApplicationController
-  before_action :set_chat, only: [ :create ]
-  before_action :authorize_chat_access, only: [ :create ]
+  before_action :set_chat, only: [ :index, :create ]
+  before_action :authorize_chat_access, only: [ :index, :create ]
   before_action :set_message, only: [ :edit, :update, :destroy ]
   before_action :require_owner_or_moderator, only: [ :edit, :update, :destroy ]
+
+  def index
+    before_id = params[:before_id].to_i
+    if before_id <= 0
+      head :bad_request
+      return
+    end
+
+    page = @chat.messages.where("id < ?", before_id)
+                .order(id: :desc)
+                .limit(Message::PAGE_SIZE + 1)
+                .to_a
+    @has_more_messages = page.size > Message::PAGE_SIZE
+    @messages = page.first(Message::PAGE_SIZE).reverse
+
+    respond_to do |format|
+      format.turbo_stream
+    end
+  end
 
   def create
     @message = @chat.messages.create(message_params)

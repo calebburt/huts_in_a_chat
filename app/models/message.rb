@@ -3,6 +3,7 @@ class Message < ApplicationRecord
   # else (SVG, HTML, PDF, …) is shown as a download link with forced
   # Content-Disposition: attachment so the user has to download to view.
   INLINE_IMAGE_TYPES = %w[image/png image/jpeg image/gif image/webp].freeze
+  PAGE_SIZE = 30
   MAX_ATTACHMENT_BYTES = 50.megabytes
   # Attachments larger than this are auto-purged by PurgeLargeAttachmentsJob
   # once they reach LARGE_ATTACHMENT_TTL. Smaller attachments are kept forever.

@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   get "dms/:user_id" => "chats#dm", as: :dm_chat
 
   resources :chats do
-    resources :messages, only: [ :create, :edit, :update, :destroy ] do
+    resources :messages, only: [ :index, :create, :edit, :update, :destroy ] do
       resources :reactions, only: [ :create, :destroy ]
     end
   end

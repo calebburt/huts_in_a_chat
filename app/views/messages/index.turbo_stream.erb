@@ -1,0 +1,11 @@
+<%= turbo_stream.after "messages_top_sentinel" do %>
+  <%= render @messages %>
+<% end %>
+
+<% if @has_more_messages %>
+  <%= turbo_stream.replace "messages_top_sentinel" do %>
+    <%= render "chats/messages_top_sentinel", before_id: @messages.first.id %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove "messages_top_sentinel" %>
+<% end %>
