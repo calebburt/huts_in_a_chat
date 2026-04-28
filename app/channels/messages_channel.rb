@@ -17,7 +17,10 @@ class MessagesChannel < ApplicationCable::Channel
         created_at: message.created_at,
         updated_at: message.updated_at,
         attachment_url: message.attachment.attached? ?
-          Rails.application.routes.url_helpers.rails_blob_path(message.attachment) : nil
+          Rails.application.routes.url_helpers.rails_blob_path(message.attachment) : nil,
+        reactions: message.reactions.map { |r|
+          { id: r.id, emoji: r.emoji, user_id: r.user_id, message_id: r.message_id }
+        }
       }
     }
     broadcast_to(message.chat, payload)

@@ -15,6 +15,8 @@ class Reaction < ApplicationRecord
   def rebroadcast_message
     return if Rails.env.test?
     return unless Message.exists?(id: message_id)
-    message.reload.send(:broadcast_to_recipients, :replace)
+    fresh = message.reload
+    fresh.send(:broadcast_to_recipients, :replace)
+    MessagesChannel.broadcast_message(fresh, :replace)
   end
 end
