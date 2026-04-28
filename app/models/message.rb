@@ -20,16 +20,25 @@ class Message < ApplicationRecord
   has_one_attached :attachment
 
   after_create_commit do
-    broadcast_to_recipients(:append) unless Rails.env.test?
+    unless Rails.env.test?
+      broadcast_to_recipients(:append)
+      MessagesChannel.broadcast_message(self, :append)
+    end
     SendMessagePushJob.perform_later(self)
   end
 
   after_update_commit do
-    broadcast_to_recipients(:replace) unless Rails.env.test?
+    unless Rails.env.test?
+      broadcast_to_recipients(:replace)
+      MessagesChannel.broadcast_message(self, :replace)
+    end
   end
 
   after_destroy_commit do
-    broadcast_to_recipients(:remove) unless Rails.env.test?
+    unless Rails.env.test?
+      broadcast_to_recipients(:remove)
+      MessagesChannel.broadcast_message(self, :remove)
+    end
   end
 
   # The set of users who can be viewing this message and therefore need

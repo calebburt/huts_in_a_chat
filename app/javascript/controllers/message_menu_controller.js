@@ -63,12 +63,17 @@ export default class extends Controller {
   _onContextMenu(event) {
     const bubble = this.element.querySelector(".message")
     if (!bubble || !bubble.contains(event.target)) return
+    // Let taps on links/images fall through to their default behavior.
+    if (event.target.closest("a, img")) return
     event.preventDefault()
     const menu = this._menu
     if (this._picker) this._picker.hidden = true
     menu.hidden = false
-    menu.style.left = `${event.clientX}px`
-    menu.style.top = `${event.clientY}px`
+    const touch = event.touches?.[0]
+    const x = touch ? touch.clientX : event.clientX
+    const y = touch ? touch.clientY : event.clientY
+    menu.style.left = `${x}px`
+    menu.style.top = `${y}px`
 
     requestAnimationFrame(() => {
       const rect = menu.getBoundingClientRect()

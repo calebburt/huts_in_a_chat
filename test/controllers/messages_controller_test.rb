@@ -89,11 +89,15 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   test "JSON-body POST without .json URL still gets JSON back" do
     api_key = ApiKey.create_random(@user).plaintext_key
     # Mimics a Python `requests` client: Content-Type is JSON, but the URL has
-    # no .json extension and Accept defaults to */*. With turbo_stream listed
-    # first in respond_to, the wildcard Accept previously matched turbo_stream.
+    # no .json extension and Accept is */*. With format.json listed first in
+    # respond_to, the wildcard Accept matches it.
     post chat_messages_url(@chat),
       params: { message: { content: "hi" } }.to_json,
-      headers: { "X-Api-Key" => api_key, "Content-Type" => "application/json" }
+      headers: {
+        "X-Api-Key" => api_key,
+        "Content-Type" => "application/json",
+        "Accept" => "*/*"
+      }
     assert_response :created
     assert_equal "application/json", response.media_type
   end
