@@ -16,6 +16,13 @@
     <%= form.text_field :name %>
   </div>
 
+  <% if chat.new_record? && current_user.is_moderator? %>
+    <div>
+      <%= form.label :chat_type, "Chat type", class: "label-block" %>
+      <%= form.select :chat_type, [ [ "Group chat", "group_chat" ], [ "Announcements", "announcements" ] ], {}, class: "btn" %>
+    </div>
+  <% end %>
+
   <br>
 
   <div>

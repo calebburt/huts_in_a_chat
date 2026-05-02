@@ -1,6 +1,7 @@
 class MessagesController < ApplicationController
   before_action :set_chat, only: [ :index, :create ]
   before_action :authorize_chat_access, only: [ :index, :create ]
+  before_action :require_moderator_for_announcements, only: [ :create ]
   before_action :set_message, only: [ :edit, :update, :destroy ]
   before_action :require_owner_or_moderator, only: [ :edit, :update, :destroy ]
 
@@ -85,6 +86,12 @@ class MessagesController < ApplicationController
   def authorize_chat_access
     return if @chat.users.include?(current_user) || current_user.is_moderator?
     deny_access(root_path)
+  end
+
+  def require_moderator_for_announcements
+    return unless @chat.announcements?
+    return if current_user.is_moderator?
+    deny_access(chat_path(@chat))
   end
 
   def require_owner_or_moderator

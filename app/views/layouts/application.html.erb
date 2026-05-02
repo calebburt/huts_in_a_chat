@@ -77,6 +77,30 @@
       <% end %>
       <%= yield %>
     </main>
+    <% if current_user %>
+    <style>
+      dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        color: white;
+        transform: translate(-50%, -50%);
+        background-color: #45AC7077 !important;
+        border: 1px solid #ddd5 !important;
+      }
+    </style>
+    <dialog open class="section">
+      <h1>Huts in a Chat 6.0 Released!</h1>
+      <p>After months of developments, Huts in a Chat 6.0 is finally done! The changes have been gradual, and all features have been out for a week. However, as of today, some fixes have been done.</p>
+    </dialog>
+    <%= javascript_tag nonce: true do %>
+      const dialog = document.querySelector("dialog");
+      if (dialog) {
+        setTimeout(() => dialog.close(), 10000);
+      }
+    <% end %>
+    <% session[:seen_6_0_release] = true %>
+    <% end %>
     <%= javascript_tag nonce: true do %>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {

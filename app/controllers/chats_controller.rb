@@ -1,15 +1,18 @@
 class ChatsController < ApplicationController
+  LISTED_CHAT_TYPES = %i[ group_chat announcements ].freeze
+
   before_action :set_chat, only: %i[ show edit update destroy ]
   before_action :authorize_manage, only: %i[ edit update destroy ]
-  before_action :require_group_chat, only: %i[ edit update destroy ]
+  before_action :require_manageable_chat, only: %i[ edit update destroy ]
 
   # GET /chats or /chats.json
   def index
+    scope = Chat.where(chat_type: LISTED_CHAT_TYPES)
     if current_user.is_moderator?
-      @chats = Chat.where(chat_type: :group_chat).distinct
+      @chats = scope.distinct
       @shown_as_moderator = true
     else
-      @chats = Chat.where(chat_type: :group_chat).joins(:users).where(users: { id: current_user.id }).distinct
+      @chats = scope.joins(:users).where(users: { id: current_user.id }).distinct
     end
   end
 
@@ -64,7 +67,7 @@ class ChatsController < ApplicationController
 
   # POST /chats or /chats.json
   def create
-    @chat = Chat.new(chat_params.merge(chat_type: :group_chat))
+    @chat = Chat.new(chat_params.merge(chat_type: requested_chat_type))
 
     assign_users_from_params(@chat)
 
@@ -125,14 +128,26 @@ class ChatsController < ApplicationController
       end
     end
 
-    def require_group_chat
+    def require_manageable_chat
       return if @chat.group_chat?
+      return if @chat.announcements? && current_user.is_moderator?
       redirect_to root_path, status: :not_found
     end
 
     # Only allow a list of trusted parameters through.
     def chat_params
       params.expect(chat: [ :name ])
+    end
+
+    # Honors a requested chat_type only for moderators picking announcements;
+    # everyone else creates plain group chats. Avoids putting chat_type through
+    # mass assignment so a non-moderator can't escalate by hand-crafting params.
+    def requested_chat_type
+      if params.dig(:chat, :chat_type) == "announcements" && current_user.is_moderator?
+        :announcements
+      else
+        :group_chat
+      end
     end
 
     def assign_users_from_params(chat)

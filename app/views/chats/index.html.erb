@@ -10,7 +10,7 @@
     <hr>
     <% @chats.each do |chat| %>
       <%= link_to chat, class: "chat-link" do %>
-        <h3><%= chat.name %></h3>
+        <h3><%= chat.name %><% if chat.announcements? %> 📢<% end %></h3>
       <% end %>
       <hr>
     <% end %>
