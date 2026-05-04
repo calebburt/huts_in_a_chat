@@ -22,7 +22,7 @@ main {
 }
 
 body {
-  word-break: break-all;
+  overflow-wrap: break-word;
   font-family: Arial, sans-serif;
   color: white;
   margin: 0;
@@ -160,6 +160,7 @@ header ul li a:hover {
   text-decoration: underline;
 }
 
+/* Responsive adjustments for mobile screens */
 @media screen and (max-width: 640px) {
   header.titlebar {
     flex-wrap: wrap;
@@ -205,6 +206,10 @@ header ul li a:hover {
     padding: 6px 10px;
     font-size: 14px;
     white-space: nowrap;
+  }
+
+  main {
+    margin: 20px;
   }
 }
 
@@ -281,7 +286,7 @@ option {
   border-radius: 25px 25px 25px 0;
   background-color: #45AC7050;
   width: fit-content;
-  max-width: 40%;
+  max-width: 60%;
   min-width: 50px;
 }
 
