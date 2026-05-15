@@ -17,6 +17,7 @@ class Message < ApplicationRecord
   validates :content, presence: true, if: -> { !attachment.attached? }
   validates :content, length: { maximum: 500 }
   validate :validate_attachment
+  validate :content_must_have_visible_text, if: -> { content.present? }
 
   has_one_attached :attachment
 
@@ -76,6 +77,36 @@ class Message < ApplicationRecord
     if attachment.blob.byte_size > MAX_ATTACHMENT_BYTES
       errors.add(:attachment, "is too large (max #{MAX_ATTACHMENT_BYTES / 1.megabyte}MB)")
       attachment.purge_later
+    end
+  end
+
+  def content_must_have_visible_text
+    # Render markdown to HTML, then strip tags to check if any visible text remains
+    require "nokogiri"
+    require "redcarpet"
+    
+    renderer = MarkdownHelper::HTMLRenderer.new(
+      filter_html: true,
+      escape_html: true,
+      safe_links_only: true,
+      no_styles: true,
+      hard_wrap: true
+    )
+    
+    options = {
+      fenced_code_blocks: true,
+      autolink: true,
+      tables: true,
+      strikethrough: true,
+      lax_spacing: true
+    }
+    
+    markdown = Redcarpet::Markdown.new(renderer, options)
+    rendered_html = markdown.render(content)
+    visible_text = Nokogiri::HTML.fragment(rendered_html).text.strip
+    
+    if visible_text.blank?
+      errors.add(:content, "cannot contain only tags and whitespace")
     end
   end
 end
